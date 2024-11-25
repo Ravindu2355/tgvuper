@@ -1,5 +1,6 @@
 from pyrogram import Client, filters, types
 from task_manager import add_task_to_list, start_task_processing
+from config import authU
 
 # Handler for the /url_add command
 @Client.on_message(filters.regex("url_add"))
@@ -14,8 +15,11 @@ async def url_add_handler(client, message):
         add_task_to_list(url, message.chat.id, thumbnail_url)
         await client.send_message(message.chat.id, f"Task added for URL: {url}")
 
-@Client.on_message(filters.command("rts"))
-async def _rts(client, message):
-        msg = await message.reply("Trying.....")
-        await start_task_processing(client)
-        await msg.edit_text("Started!...")
+@Client.on_message(filters.regex("http"))
+async def p_url(client,message):
+        id = str(message.chat.id)
+        if id in authU:
+            add_task_to_list(message.text, message.chat.id, thumbnail_url=None)
+            await message.reply(f"Task added for URL: {url}")
+        else:
+            await message.reply("Sorry You are not user😄")
