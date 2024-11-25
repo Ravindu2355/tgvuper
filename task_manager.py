@@ -1,11 +1,12 @@
 import threading
-import os
+import os, asyncio
 import time
 import requests
 from utils import generate_thumbnail, download_file, upload_file_to_telegram
 
 # Task list to hold URL tasks
 task_list = []
+runing=0
 
 # Function to add a task to the task list
 def add_task_to_list(url, chat_id, thumbnail_url=None):
@@ -36,7 +37,7 @@ async def process_tasks(client):
                     os.remove(file_path)
                     await msg.delete()
     
-        time.sleep(2)  # Wait 2 seconds before checking again
+        await asyncio.sleep(2)  # Wait 2 seconds before checking again
 
 # Start the task processing in a background thread
 def start_task_processing(client):
