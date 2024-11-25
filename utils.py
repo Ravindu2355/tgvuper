@@ -59,7 +59,7 @@ async def download_file(client, msg, url, download_path, chat_id):
         return None
 
 # Function to upload file to Telegram (with optional thumbnail) with progress
-async def upload_file_to_telegram(client, msg, task, file_path):
+async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
     chat_id=task['chat_id']
     try:
         await msg.edit_text("Upload Starting!...")
@@ -70,11 +70,13 @@ async def upload_file_to_telegram(client, msg, task, file_path):
                 if "video" in file_type:
                     thumbnail_path = generate_thumbnail(file_path)
             start_time=time.time()
+            if cap == "":
+                cap == task['url']
             if file_type and "video" in file_type:
                 await client.send_video(
                     chat_id=task['chat_id'],
                     video=file_path,
-                    caption=f"Video: {task['url']}",
+                    caption=f"Video: {cap}",
                     thumb=thumbnail_path if thumbnail_path else task['thumbnail_url'],
                     supports_streaming=True,  # Ensure the video is streamable
                     progress=progress_for_pyrogram,
@@ -84,7 +86,7 @@ async def upload_file_to_telegram(client, msg, task, file_path):
                 await client.send_document(
                     chat_id=task['chat_id'],
                     document=file_path,
-                    caption=f"File: {task['url']}",
+                    caption=f"File: {cap}",
                     thumb=thumbnail_path if thumbnail_path else task['thumbnail_url'],
                     supports_streaming=True,  # Ensure the video is streamable
                     progress=progress_for_pyrogram,
