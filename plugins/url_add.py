@@ -1,5 +1,5 @@
 from pyrogram import Client, filters, types
-from task_manager import add_task_to_list
+from task_manager import add_task_to_list, start_task_processing
 
 # Handler for the /url_add command
 @Client.on_message(filters.regex("url_add"))
@@ -13,3 +13,8 @@ async def url_add_handler(client, message):
         # Add the task to the task list
         add_task_to_list(url, message.chat.id, thumbnail_url)
         await client.send_message(message.chat.id, f"Task added for URL: {url}")
+
+@Client.on_message(filters.command("rts"))
+async def _rts(client, message):
+        msg = await message.reply("Trying.....")
+        start_task_processing(client,msg)
