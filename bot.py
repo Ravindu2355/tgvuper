@@ -8,17 +8,18 @@ from config import API_ID, API_HASH, BOT_TOKEN
 from task_manager import process_tasks, start_task_processing
 
 # Initialize the Pyrogram Client
-bot_app = Client("url_uploader_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+plugins = dict(root="plugins")
+bot = Client(name="RVX_bot", bot_token=Config.BOT_TOKEN, api_id=Config.API_ID, api_hash=Config.API_HASH, plugins=plugins)
 
 # Start task processing in the background
-start_task_processing(bot_app)
+start_task_processing(bot)
 
-@bot_app.on_message(filters.command("start"))
-async def _ms(client, messsage:types.Message):
+@bot.on_message(filters.command("start"))
+async def _ms(client, message:types.Message):
     await message.reply("okkk")
 # Add handlers for the commands
-bot_app.add_handler(url_add_handler)
-bot_app.add_handler(check_handler)
+#bot.add_handler(url_add_handler)
+#bot.add_handler(check_handler)
 
 # Run the bot
 if __name__ == '__main__':
