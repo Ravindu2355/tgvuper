@@ -6,7 +6,7 @@ from utils import generate_thumbnail, download_file, upload_file_to_telegram
 
 # Task list to hold URL tasks
 task_list = []
-runing=0
+running=0
 
 # Function to add a task to the task list
 def add_task_to_list(url, chat_id, thumbnail_url=None):
@@ -20,7 +20,8 @@ def add_task_to_list(url, chat_id, thumbnail_url=None):
 # Function to process tasks from the task list
 async def process_tasks(client):
     while True:
-        if task_list:
+        if task_list and running == 0:
+            running=1
             task = task_list.pop(0)  # Get the first task in the list
             url = task['url']
             chat_id = task['chat_id']
@@ -36,6 +37,7 @@ async def process_tasks(client):
                 if os.path.exists(file_path):
                     os.remove(file_path)
                     await msg.delete()
+                    running = 0 
     
         await asyncio.sleep(2)  # Wait 2 seconds before checking again
 
