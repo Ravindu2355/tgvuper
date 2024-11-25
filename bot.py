@@ -9,7 +9,7 @@ from task_manager import process_tasks, start_task_processing
 
 # Initialize the Pyrogram Client
 plugins = dict(root="plugins")
-bot = Client(name="RVX_bot", bot_token=Config.BOT_TOKEN, api_id=Config.API_ID, api_hash=Config.API_HASH, plugins=plugins)
+bot = Client(name="RVX_bot", bot_token=BOT_TOKEN, api_id=API_ID, api_hash=API_HASH, plugins=plugins)
 
 # Start task processing in the background
 start_task_processing(bot)
