@@ -1,51 +1,22 @@
 import os
 import time
 import threading
-import requests
-from pyrogram import Client
-from mimetypes import guess_type
-from app.utils import generate_thumbnail, download_file, upload_file_to_telegram
+from pyrogram import Client, filters
+from app.plugins.url_add import url_add_handler
+from app.plugins.check import check_handler
 from app.config import API_ID, API_HASH, BOT_TOKEN
+from app.task_manager import process_tasks, start_task_processing
 
 # Initialize the Pyrogram Client
 bot_app = Client("url_uploader_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-# Task list to hold URL tasks
-task_list = []
+# Start task processing in the background
+start_task_processing()
 
-# Function to add a task to the task list
-def add_task_to_list(url, chat_id, thumbnail_url=None):
-    task = {
-        'url': url,
-        'chat_id': chat_id,
-        'thumbnail_url': thumbnail_url
-    }
-    task_list.append(task)
-    print(f"Task added: {task}")
+# Add handlers for the commands
+bot_app.add_handler(url_add_handler)
+bot_app.add_handler(check_handler)
 
-# Function to process tasks from the task list
-def process_tasks():
-    while True:
-        if task_list:
-            task = task_list.pop(0)  # Get the first task in the list
-            url = task['url']
-            chat_id = task['chat_id']
-            thumbnail_url = task['thumbnail_url']
-            
-            # Download the file from the URL
-            file_path = download_file(url, "downloaded_file", chat_id)
-            # Upload the file to Telegram
-            upload_file_to_telegram(task, file_path)
-            
-            # Clean up downloaded file after upload
-            if os.path.exists(file_path):
-                os.remove(file_path)
-                print(f"Cleaned up: {file_path}")
-        
-        time.sleep(2)  # Wait 2 seconds before checking again
-
-# Start the task processing thread
-def start_task_processing():
-    thread = threading.Thread(target=process_tasks)
-    thread.daemon = True
-    thread.start()
+# Run the bot
+if __name__ == '__main__':
+    bot_app.run()
