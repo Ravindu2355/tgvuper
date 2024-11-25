@@ -17,7 +17,7 @@ def generate_thumbnail(video_path, thumbnail_path="thumbnail.jpg"):
         return None
 
 # Function to download file from the URL with progress
-async def download_file(url, download_path, chat_id):
+async def download_file(client, msg, url, download_path, chat_id):
     try:
         msg = await client.send_message(chat_id,"starting download...")
         response = requests.get(url, stream=True)
@@ -38,16 +38,16 @@ async def download_file(url, download_path, chat_id):
                     if round(diffr % 10.00) == 0 or downloaded_size == total_size:
                        if old_pm != pm:
                            await msg.edit_text(pm)  # Send progress message to user
+        await msg.edit_text("downloaded!...")
         return download_path
-        await msg.delete()
     except Exception as e:
         await client.send_message(chat_id,f"Err on url:{url}\ndl Err: {e}")
         return None
 
 # Function to upload file to Telegram (with optional thumbnail) with progress
-def upload_file_to_telegram(task, file_path):
+async def upload_file_to_telegram(client, msg, task, file_path):
     try:
-        msg = await client.send_message(chat_id,"Starting Upload...")
+        await msg.edit_text("Upload Starting!...")
         if file_path:
             file_type = guess_type(file_path)[0]
             thumbnail_path = None
