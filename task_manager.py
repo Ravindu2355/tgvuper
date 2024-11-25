@@ -2,7 +2,7 @@ import threading
 import os
 import time
 import requests
-from app.utils import generate_thumbnail, download_file, upload_file_to_telegram
+from utils import generate_thumbnail, download_file, upload_file_to_telegram
 
 # Task list to hold URL tasks
 task_list = []
