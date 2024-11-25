@@ -13,7 +13,7 @@ bot_app = Client("url_uploader_bot", api_id=API_ID, api_hash=API_HASH, bot_token
 # Start task processing in the background
 start_task_processing(bot_app)
 
-@bot_app.on_message(-filters.command())
+@bot_app.on_message(~filters.command())
 async def _ms(client, messsage:types.Message):
     await message.reply("okkk")
 # Add handlers for the commands
