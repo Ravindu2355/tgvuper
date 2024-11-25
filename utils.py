@@ -4,6 +4,18 @@ from mimetypes import guess_type
 from moviepy.editor import VideoFileClip
 from up_progress import progress_for_pyrogram
 
+def get_file_name_from_response(response):
+    # Check if Content-Disposition header is present
+    content_disposition = response.headers.get('Content-Disposition')
+    if content_disposition:
+        # Extract the filename from the Content-Disposition header
+        filename_part = content_disposition.split('filename=')[-1]
+        filename = filename_part.strip(' "')
+        return filename
+    
+    # Fallback to extracting the file name from the URL
+    return f"video_{str(time.time())}.mp4"
+    
 # Function to generate a thumbnail from the video if no thumbnail is provided
 def generate_thumbnail(video_path, thumbnail_path="thumbnail.jpg"):
     try:
@@ -22,6 +34,8 @@ async def download_file(client, msg, url, download_path, chat_id):
         #msg = await client.send_message(chat_id,"starting download...")
         response = requests.get(url, stream=True)
         total_size = int(response.headers.get('content-length', 0))
+        ndl=get_file_name_from_response(response)
+        download_path= ndl
         downloaded = 0
         start_t=time.time()
         old_pm=""
@@ -35,7 +49,7 @@ async def download_file(client, msg, url, download_path, chat_id):
                     now=time.time()
                     diff = now - start_t
                     pm=progress_message
-                    if round(diffr % 10.00) == 0 or downloaded_size == total_size:
+                    if round(diff % 10.00) == 0 or downloaded == total_size:
                        if old_pm != pm:
                            await msg.edit_text(pm)  # Send progress message to user
         await msg.edit_text("downloaded!...")
