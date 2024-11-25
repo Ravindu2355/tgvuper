@@ -5,6 +5,7 @@ from flask_cors import CORS
 # Initialize the Flask application
 app = Flask(__name__)
 CORS(app)
+
 @app.route('/')
 def f_home():
     return 'hellow RVX task dl bot',200
