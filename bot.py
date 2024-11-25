@@ -23,4 +23,4 @@ async def _ms(client, message:types.Message):
 
 # Run the bot
 if __name__ == '__main__':
-    bot_app.run()
+    bot.run()
