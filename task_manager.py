@@ -1,4 +1,4 @@
-import threading
+from threading import Thread
 import os, asyncio
 import time
 import requests
@@ -20,9 +20,9 @@ def add_task_to_list(url, chat_id, thumbnail_url=None):
 
 # Function to process tasks from the task list
 async def process_tasks(client):
-    global s
-    s+=1
+    global s, running
     while True:
+        s+=1
         if task_list and running == 0:
             running=1
             task = task_list.pop(0)  # Get the first task in the list
@@ -47,7 +47,12 @@ async def process_tasks(client):
 # Start the task processing in a background thread
 def start_task_processing(client):
     global s
-    s=1
-    thread = threading.Thread(target=process_tasks, args=(client,))
-    thread.daemon = True
+    s = 1
+    def run_asyncio():
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(process_tasks(client))
+
+    thread = Thread(target=run_asyncio)
+    thread.daemon = True  # Set the thread as a daemon thread
     thread.start()
