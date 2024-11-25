@@ -11,7 +11,7 @@ from app.task_manager import process_tasks, start_task_processing
 bot_app = Client("url_uploader_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 # Start task processing in the background
-start_task_processing()
+start_task_processing(bot_app)
 
 # Add handlers for the commands
 bot_app.add_handler(url_add_handler)
