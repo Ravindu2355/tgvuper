@@ -68,7 +68,7 @@ async def upload_file_to_telegram(client, msg, task, file_path):
             if not task['thumbnail_url']:
                 if "video" in file_type:
                     thumbnail_path = generate_thumbnail(file_path)
-            
+            start_time=time.time()
             if file_type and "video" in file_type:
                 await client.send_video(
                     chat_id=task['chat_id'],
