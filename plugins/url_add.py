@@ -18,3 +18,4 @@ async def url_add_handler(client, message):
 async def _rts(client, message):
         msg = await message.reply("Trying.....")
         start_task_processing(client,msg)
+        await msg.edit_text("Started!...")
