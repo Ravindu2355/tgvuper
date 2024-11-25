@@ -46,11 +46,6 @@ async def download_file(url, download_path, chat_id):
 
 # Function to upload file to Telegram (with optional thumbnail) with progress
 def upload_file_to_telegram(task, file_path):
-    def progress_callback(current, total):
-        progress = (current / total) * 100
-        progress_message = f"Uploading... {progress:.2f}%"
-        client.send_message(task['chat_id'], progress_message)  # Send progress message to user
-
     try:
         msg = await client.send_message(chat_id,"Starting Upload...")
         if file_path:
@@ -61,20 +56,26 @@ def upload_file_to_telegram(task, file_path):
                     thumbnail_path = generate_thumbnail(file_path)
             
             if file_type and "video" in file_type:
-                client.send_video(
+                await client.send_video(
                     chat_id=task['chat_id'],
                     video=file_path,
                     caption=f"Video: {task['url']}",
                     thumb=thumbnail_path if thumbnail_path else task['thumbnail_url'],
-                    progress=progress_callback
+                    supports_streaming=True,  # Ensure the video is streamable
+                    progress=progress_for_pyrogram,
+                    progress_args=("🔰**Uploading!...**🔰\n\n",msg,start_time)
                 )
             else:
-                client.send_document(
+                await client.send_document(
                     chat_id=task['chat_id'],
                     document=file_path,
                     caption=f"File: {task['url']}",
                     thumb=thumbnail_path if thumbnail_path else task['thumbnail_url'],
-                    progress=progress_callback
+                    supports_streaming=True,  # Ensure the video is streamable
+                    progress=progress_for_pyrogram,
+                    progress_args=("🔰**Uploading!...**🔰\n\n",msg,start_time)
+                
                 )
     except Exception as e:
+        await client.send_message(chat_id,f"Err on upload : {e}"
         pass
