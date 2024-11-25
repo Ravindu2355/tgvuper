@@ -77,5 +77,5 @@ async def upload_file_to_telegram(client, msg, task, file_path):
                 
                 )
     except Exception as e:
-        await client.send_message(chat_id,f"Err on upload : {e}"
+        await client.send_message(chat_id,f"Err on upload : {e}")
         pass
