@@ -29,6 +29,9 @@ async def process_tasks(client):
             url = task['url']
             chat_id = task['chat_id']
             thumbnail_url = task['thumbnail_url']
+            if task['type']:
+                if task['type'] == 'page':
+                    task['url'] = extract_pg(task['url'])
             msg= await client.send_message(chat_id,"Starting Task!")
             # Download the file from the URL
             filename = url.split("/")[-1]  # Extract the filename from the URL
