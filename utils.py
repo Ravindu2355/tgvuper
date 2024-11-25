@@ -2,7 +2,7 @@ import os, time
 import requests
 from mimetypes import guess_type
 from moviepy.editor import VideoFileClip
-from up_progress import progress_for_pyrogram
+from Func.up_progress import progress_for_pyrogram
 
 def get_file_name_from_response(response):
     # Check if Content-Disposition header is present
