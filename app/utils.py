@@ -10,7 +10,6 @@ def generate_thumbnail(video_path, thumbnail_path="thumbnail.jpg"):
         frame = clip.get_frame(1)  # Gets the frame at 1 second
         frame.save_frame(thumbnail_path)  # Save the frame as an image
         clip.close()
-        print(f"Thumbnail saved to {thumbnail_path}")
         return thumbnail_path
     except Exception as e:
         print(f"Error generating thumbnail: {e}")
@@ -29,37 +28,37 @@ def download_file(url, download_path, chat_id):
                     file.write(chunk)
                     downloaded += len(chunk)
                     progress = (downloaded / total_size) * 100 if total_size > 0 else 0
-                    print(f"Download progress: {progress:.2f}%")
-        print(f"File downloaded to {download_path}")
+                    progress_message = f"Downloading... {progress:.2f}%"
+                    client.send_message(chat_id, progress_message)  # Send progress message to user
         return download_path
     except Exception as e:
-        print(f"Error downloading file: {e}")
         return None
 
 # Function to upload file to Telegram (with optional thumbnail) with progress
 def upload_file_to_telegram(task, file_path):
     def progress_callback(current, total):
         progress = (current / total) * 100
-        print(f"Upload progress: {progress:.2f}%")
+        progress_message = f"Uploading... {progress:.2f}%"
+        client.send_message(task['chat_id'], progress_message)  # Send progress message to user
 
     try:
         if file_path:
-            file_type = guess_type(file_path)[0]  # Get MIME type (e.g., video/mp4, image/jpg)
+            file_type = guess_type(file_path)[0]
             thumbnail_path = None
-            if not task['thumbnail_url']:  # If no thumbnail is provided, generate one
+            if not task['thumbnail_url']:
                 if "video" in file_type:
-                    thumbnail_path = generate_thumbnail(file_path)  # Generate thumbnail from video
+                    thumbnail_path = generate_thumbnail(file_path)
             
-            if file_type and "video" in file_type:  # Check if it's a video file
-                bot_app.send_video(
+            if file_type and "video" in file_type:
+                client.send_video(
                     chat_id=task['chat_id'],
                     video=file_path,
                     caption=f"Video: {task['url']}",
                     thumb=thumbnail_path if thumbnail_path else task['thumbnail_url'],
                     progress=progress_callback
                 )
-            else:  # For other file types
-                bot_app.send_document(
+            else:
+                client.send_document(
                     chat_id=task['chat_id'],
                     document=file_path,
                     caption=f"File: {task['url']}",
@@ -67,4 +66,4 @@ def upload_file_to_telegram(task, file_path):
                     progress=progress_callback
                 )
     except Exception as e:
-        print(f"Error uploading file to Telegram: {e}")
+        pass
