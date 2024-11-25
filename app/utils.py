@@ -2,7 +2,7 @@ import os, time
 import requests
 from mimetypes import guess_type
 from moviepy.editor import VideoFileClip
-from up_progress import progress_for_pyrogram
+from app.up_progress import progress_for_pyrogram
 
 # Function to generate a thumbnail from the video if no thumbnail is provided
 def generate_thumbnail(video_path, thumbnail_path="thumbnail.jpg"):
