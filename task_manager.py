@@ -46,6 +46,6 @@ async def process_tasks(client):
 # Start the task processing in a background thread
 def start_task_processing(client):
     s=1
-    thread = threading.Thread(target=process_tasks, args=(client))
+    thread = threading.Thread(target=process_tasks, args=(client,))
     thread.daemon = True
     thread.start()
