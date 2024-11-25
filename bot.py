@@ -2,10 +2,10 @@ import os
 import time
 import threading
 from pyrogram import Client, filters
-from app.plugins.url_add import url_add_handler
-from app.plugins.check import check_handler
-from app.config import API_ID, API_HASH, BOT_TOKEN
-from app.task_manager import process_tasks, start_task_processing
+from plugins.url_add import url_add_handler
+from plugins.check import check_handler
+from config import API_ID, API_HASH, BOT_TOKEN
+from task_manager import process_tasks, start_task_processing
 
 # Initialize the Pyrogram Client
 bot_app = Client("url_uploader_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
