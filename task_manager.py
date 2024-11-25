@@ -3,6 +3,7 @@ import os, asyncio
 import time
 import requests
 from Func.utils import generate_thumbnail, download_file, upload_file_to_telegram
+from Func.expg import ex_page
 
 # Task list to hold URL tasks
 task_list = []
@@ -31,7 +32,7 @@ async def process_tasks(client):
             thumbnail_url = task['thumbnail_url']
             if task['type']:
                 if task['type'] == 'page':
-                    task['url'] = extract_pg(task['url'])
+                    task['url'] = ex_page(task)
             msg= await client.send_message(chat_id,"Starting Task!")
             # Download the file from the URL
             filename = url.split("/")[-1]  # Extract the filename from the URL
