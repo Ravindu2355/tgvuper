@@ -19,7 +19,7 @@ def generate_thumbnail(video_path, thumbnail_path="thumbnail.jpg"):
 # Function to download file from the URL with progress
 async def download_file(client, msg, url, download_path, chat_id):
     try:
-        msg = await client.send_message(chat_id,"starting download...")
+        #msg = await client.send_message(chat_id,"starting download...")
         response = requests.get(url, stream=True)
         total_size = int(response.headers.get('content-length', 0))
         downloaded = 0
