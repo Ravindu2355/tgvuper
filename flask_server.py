@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from app.task_manager import add_task_to_list
+from task_manager import add_task_to_list
 
 # Initialize the Flask application
 app = Flask(__name__)
