@@ -17,5 +17,5 @@ async def url_add_handler(client, message):
 @Client.on_message(filters.command("rts"))
 async def _rts(client, message):
         msg = await message.reply("Trying.....")
-        start_task_processing(client)
+        await start_task_processing(client)
         await msg.edit_text("Started!...")
