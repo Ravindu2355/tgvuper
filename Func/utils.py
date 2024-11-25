@@ -3,6 +3,8 @@ import requests
 from mimetypes import guess_type
 from moviepy.editor import VideoFileClip
 from Func.up_progress import progress_for_pyrogram
+from res.header import get_h
+from res.cookie import r_cookies
 
 def get_file_name_from_response(response):
     # Check if Content-Disposition header is present
@@ -32,7 +34,9 @@ def generate_thumbnail(video_path, thumbnail_path="thumbnail.jpg"):
 async def download_file(client, msg, url, download_path, chat_id):
     try:
         #msg = await client.send_message(chat_id,"starting download...")
-        response = requests.get(url, stream=True)
+        headers=get_h()
+        cookies=r_cookies()
+        response = requests.get(url, headers=headers, cookies=cookies, stream=True)
         total_size = int(response.headers.get('content-length', 0))
         ndl=get_file_name_from_response(response)
         download_path= ndl
