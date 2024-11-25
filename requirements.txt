@@ -1,0 +1,5 @@
+Flask
+pyrogram
+requests
+moviepy
+tgcrypto
