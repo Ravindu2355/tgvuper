@@ -7,6 +7,7 @@ from utils import generate_thumbnail, download_file, upload_file_to_telegram
 # Task list to hold URL tasks
 task_list = []
 running=0
+s=0
 
 # Function to add a task to the task list
 def add_task_to_list(url, chat_id, thumbnail_url=None):
@@ -19,6 +20,7 @@ def add_task_to_list(url, chat_id, thumbnail_url=None):
 
 # Function to process tasks from the task list
 async def process_tasks(client):
+    s+=1
     while True:
         if task_list and running == 0:
             running=1
@@ -43,6 +45,7 @@ async def process_tasks(client):
 
 # Start the task processing in a background thread
 def start_task_processing(client):
-    thread = threading.Thread(target=process_tasks, args=(client,))
+    s=1
+    thread = threading.Thread(target=process_tasks, args=(client))
     thread.daemon = True
     thread.start()
