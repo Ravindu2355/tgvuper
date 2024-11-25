@@ -31,10 +31,15 @@ async def process_tasks(client):
             thumbnail_url = task['thumbnail_url']
             msg= await client.send_message(chat_id,"Starting Task!")
             # Download the file from the URL
-            file_path = download_file(client, msg, url, "downloaded_file", chat_id)
+            filename = url.split("/")[-1]  # Extract the filename from the URL
+            if '?' in filename:
+               filename = filename.split("?")[0]
+            if "." not in filename:
+                filename = f"{time.time()}.mp4"
+            file_path = await download_file(client, msg, url, filename, chat_id)
             if file_path:  # Only upload if the file was successfully downloaded
                 # Upload the file to Telegram
-                upload_file_to_telegram(client, msg, task, file_path)
+                await upload_file_to_telegram(client, msg, task, file_path)
             
                 # Clean up downloaded file after upload
                 if os.path.exists(file_path):
