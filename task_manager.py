@@ -20,6 +20,7 @@ def add_task_to_list(url, chat_id, thumbnail_url=None):
 
 # Function to process tasks from the task list
 async def process_tasks(client):
+    global s
     s+=1
     while True:
         if task_list and running == 0:
@@ -45,6 +46,7 @@ async def process_tasks(client):
 
 # Start the task processing in a background thread
 def start_task_processing(client):
+    global s
     s=1
     thread = threading.Thread(target=process_tasks, args=(client,))
     thread.daemon = True
