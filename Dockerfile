@@ -1,23 +1,23 @@
-# Use the official Python image
-FROM python:3.11-slim
+# Use an official Python runtime as a parent image
+FROM python:3.9-slim
 
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /app
 
+# Copy the current directory contents into the container at /app
 COPY . .
-# Set the PYTHONPATH to include the working directory
-ENV PYTHONPATH=/app
 
-# Copy the local requirements.txt file into the container
+# Install ffmpeg
+#RUN apt-get update && apt-get install -y ffmpeg && apt-get clean
+#RUN apt -qq update && apt -qq install -y git python3 python3-pip ffmpeg
+
+# Install Python dependencies
 COPY requirements.txt .
-
-# Install the Python dependencies
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application into the container
+# Expose the port the app runs on (not strictly necessary for a Telegram bot)
+#EXPOSE 8000
 
-# Expose the port for Gunicorn/Flask
-EXPOSE 8000
-
-# Run Gunicorn for the Flask app and start the bot in the background
-CMD gunicorn --bind 0.0.0.0:8000 app.flask_server:app & python3 app/bot.py
+# Run the bot when the container launches
+CMD gunicorn --bind 0.0.0.0:8000 flask_app:app & python3 bot.py
+#CMD python3 bot.py
