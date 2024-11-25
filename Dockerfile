@@ -11,13 +11,13 @@ ENV PYTHONPATH=/app
 COPY requirements.txt /app/
 
 # Install the Python dependencies
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application into the container
 COPY . /app/
 
-# Expose the port that Flask will run on
-EXPOSE 5000
+# Expose the port for Gunicorn/Flask
+EXPOSE 8000
 
-# Command to run the bot and Flask server
-CMD ["python3", "app/flask_server.py"]
+# Run Gunicorn for the Flask app and start the bot in the background
+CMD gunicorn --bind 0.0.0.0:8000 app.flask_server:app & python3 app/bot.py
