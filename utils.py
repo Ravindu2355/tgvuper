@@ -60,6 +60,7 @@ async def download_file(client, msg, url, download_path, chat_id):
 
 # Function to upload file to Telegram (with optional thumbnail) with progress
 async def upload_file_to_telegram(client, msg, task, file_path):
+    chat_id=task['chat_id']
     try:
         await msg.edit_text("Upload Starting!...")
         if file_path:
