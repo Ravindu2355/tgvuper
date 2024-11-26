@@ -43,9 +43,9 @@ async def ex_page(task):
     for ob in site_data:
         v=site_data[ob]
         if ob in task['type']:
-           if v['cookie']:
+           if 'cookie' in v:
               s_c=parse_cookie_str(v['cookie']) 
-           if v['headers']:
+           if 'headers' in v:
               s_h=v['headers']
     video_srcs = ex_vpg(task['url'])
     if video_srcs:
