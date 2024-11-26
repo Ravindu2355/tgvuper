@@ -20,16 +20,6 @@ def get_file_name_from_response(response):
     return f"video_{str(time.time())}.mp4"
     
 # Function to generate a thumbnail from the video if no thumbnail is provided
-def generate_thumbnail(video_path, thumbnail_path="thumbnail.jpg"):
-    try:
-        clip = VideoFileClip(video_path)
-        frame = clip.get_frame(1)  # Gets the frame at 1 second
-        frame.save_frame(thumbnail_path)  # Save the frame as an image
-        clip.close()
-        return thumbnail_path
-    except Exception as e:
-        print(f"Error generating thumbnail: {e}")
-        return None
 
 # Function to download file from the URL with progress
 async def download_file(client, msg, url, download_path, chat_id):
@@ -72,6 +62,7 @@ async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
         if file_path:
             file_type = guess_type(file_path)[0]
             thumbnail_path = None
+            duration= 0
             if not task['thumbnail_url']:
                 if "video" in file_type:
                     thumbnail_path = f'{time.time()}_thumb.jpg'
@@ -87,6 +78,7 @@ async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
                 await client.send_video(
                     chat_id=task['chat_id'],
                     video=file_path,
+                    duration=duration,
                     caption=f"Video: {cap}",
                     thumb=thumbnail_path if thumbnail_path else task['thumbnail_url'],
                     supports_streaming=True,  # Ensure the video is streamable
