@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from task_manager import add_task_to_list
+from task_manager import add_task_to_list, task_list
 from flask_cors import CORS
 
 # Initialize the Flask application
@@ -9,6 +9,11 @@ CORS(app)
 @app.route('/')
 def f_home():
     return 'hellow RVX task dl bot',200
+
+@app.route('/tasks')
+def f_home():
+    return f"Currently {len(task_list)} tasks running!..",200
+
 
 @app.route('/add_task', methods=['POST'])
 def add_task():
