@@ -2,7 +2,7 @@ from threading import Thread
 import os, asyncio
 import time
 import requests
-from Func.utils import generate_thumbnail, download_file, upload_file_to_telegram
+from Func.utils import download_file, upload_file_to_telegram
 from Func.expg import ex_page
 import globals
 # Initialize the Flask application
