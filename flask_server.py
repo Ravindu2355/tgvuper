@@ -31,5 +31,11 @@ def add_task():
     else:
         return jsonify({"status": "error", "message": "Missing url or chat_id"}), 400
 
-if __name__ == '__main__':
+def start_fls():
     app.run(host='0.0.0.0', port=8000)
+
+flask_t= Thread(target=start_fls)
+flask_t.start()
+    
+#if __name__ == '__main__':
+   #app.run(host='0.0.0.0', port=8000)
