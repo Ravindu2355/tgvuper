@@ -3,11 +3,10 @@ from task_manager import add_task_to_list, get_task_list
 from flask_cors import CORS
 from threading import Thread
 import os, asyncio
-from globals import task_list
+from globals
 # Initialize the Flask application
 app = Flask(__name__)
 CORS(app)
-
 
 @app.route('/')
 def f_home():
@@ -28,7 +27,7 @@ def add_task():
     type = data.get('type',None)
     if url and chat_id:
         task = {'url': url, 'chat_id': chat_id, 'thumbnail_url': thumbnail_url, 'type': type}
-        task_list.append(task)  # Adding task to the global task list
+        globals.task_list.append(task)  # Adding task to the global task list
         return jsonify({"status": "success", "message": f"Task added for URL: {url}"}), 200
     else:
         return jsonify({"status": "error", "message": "Missing url or chat_id"}), 400
