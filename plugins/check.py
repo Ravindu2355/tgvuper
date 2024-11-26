@@ -1,6 +1,6 @@
 from pyrogram import Client, filters, types
 from task_manager import  s
-from globals
+import globals
 
 # Handler for the /check command
 @Client.on_message(filters.command("check"))
