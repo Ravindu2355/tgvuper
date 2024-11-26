@@ -14,7 +14,7 @@ bot = Client(name="RVX_bot", bot_token=BOT_TOKEN, api_id=API_ID, api_hash=API_HA
 
 # Start task processing in the background
 
-#start_flask_app()
+start_flask_app()
 start_task_processing(bot)
 
 @bot.on_message(filters.command("start"))
