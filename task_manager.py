@@ -32,25 +32,36 @@ async def process_tasks(client):
             thumbnail_url = task['thumbnail_url']
             if task['type']:
                 if task['type'] == 'page':
-                    task['url'] = ex_page(task)
-            msg= await client.send_message(chat_id,"Starting Task!")
-            # Download the file from the URL
-            filename = url.split("/")[-1]  # Extract the filename from the URL
-            if '?' in filename:
-               filename = filename.split("?")[0]
-            if "." not in filename:
-                filename = f"{time.time()}.mp4"
-            file_path = await download_file(client, msg, url, filename, chat_id)
-            if file_path:  # Only upload if the file was successfully downloaded
-                # Upload the file to Telegram
-                await upload_file_to_telegram(client, msg, task, file_path)
-            
-                # Clean up downloaded file after upload
-                if os.path.exists(file_path):
-                    os.remove(file_path)
+                    msg= await client.send_message(chat_id,"Starting page Extract!")
+                    exd = ex_page(task)
+                    await msg.edit_text(f"Extracted: {len(exd) sources from that page!...")
+                    for url in exd:
+                      filename = url.split("/")[-1]  # Extract the filename from the URL
+                      if '?' in filename:
+                         filename = filename.split("?")[0]
+                      if "." not in filename:
+                         filename = f"{time.time()}.mp4"
+                      file_path = await download_file(client, msg, url, filename, chat_id)
+                      if file_path:                
+                         await upload_file_to_telegram(client, msg, task, file_path)
+                         if os.path.exists(file_path):
+                            os.remove(file_path)    
                     await msg.delete()
-                    running = 0 
-    
+                    running=0
+            else:
+               msg= await client.send_message(chat_id,"Starting Task!")
+               filename = url.split("/")[-1]  # Extract the filename from the URL
+               if '?' in filename:
+                  filename = filename.split("?")[0]
+               if "." not in filename:
+                  filename = f"{time.time()}.mp4"
+               file_path = await download_file(client, msg, url, filename, chat_id)
+               if file_path:                
+                    await upload_file_to_telegram(client, msg, task, file_path)
+                    if os.path.exists(file_path):
+                       os.remove(file_path)
+                    await msg.delete()
+                     
         await asyncio.sleep(2)  # Wait 2 seconds before checking again
 
 # Start the task processing in a background thread
