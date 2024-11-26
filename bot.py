@@ -17,9 +17,7 @@ bot = Client(name="RVX_bot", bot_token=BOT_TOKEN, api_id=API_ID, api_hash=API_HA
 start_flask_app()
 start_task_processing(bot)
 
-@bot.on_message(filters.command("start"))
-async def _ms(client, message:types.Message):
-    await message.reply("okkk")
+
 # Add handlers for the commands
 #bot.add_handler(url_add_handler)
 #bot.add_handler(check_handler)
