@@ -28,7 +28,7 @@ def add_task_to_list(url, chat_id, thumbnail_url=None, type=None):
     }
     globals.task_list.append(task)
     print("task add")
-    return task_list
+    return globals.task_list
 
 # Function to process tasks from the task list
 async def process_tasks(client):
