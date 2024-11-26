@@ -11,12 +11,12 @@ def f_home():
     return 'hellow RVX task dl bot',200
 
 @app.route('/tasks')
-def f_home():
+def f_tasks():
     return f"Currently {len(task_list)} tasks running!..",200
 
 
 @app.route('/add_task', methods=['POST'])
-async def add_task():
+def add_task():
     data = request.json
     url = data.get('url')
     chat_id = data.get('chat_id')
@@ -24,9 +24,9 @@ async def add_task():
     type = data.get('type',None)
     
     if url and chat_id:
-        await add_task_to_list(url, chat_id, thumbnail_url=thumbnail_url, type=type)
-        #task = {"url": url, "chat_id": chat_id, "thumbnail_url": thumbnail_url, "type": type}
-        #task_list.append(task)
+        #add_task_to_list(url, chat_id, thumbnail_url=thumbnail_url, type=type)
+        task = {"url": url, "chat_id": chat_id, "thumbnail_url": thumbnail_url, "type": type}
+        task_list.append(task)
         return jsonify({"status": "success", "message": f"Task added for URL: {url}"}), 200
     else:
         return jsonify({"status": "error", "message": "Missing url or chat_id"}), 400
