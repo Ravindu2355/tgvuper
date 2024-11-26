@@ -34,6 +34,17 @@ def add_task():
 def start_fls():
     app.run(host='0.0.0.0', port=8000)
 
+def start_flask_app(client):
+    def run_asyncio():
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(start_fls)
+
+    thread = Thread(target=run_asyncio)
+    thread.daemon = True  # Set the thread as a daemon thread
+    thread.start()
+
+
 
     
 #if __name__ == '__main__':
