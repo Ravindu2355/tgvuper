@@ -34,7 +34,7 @@ async def process_tasks(client):
                 if task['type'] == 'page':
                     msg= await client.send_message(chat_id,"Starting page Extract!")
                     exd = ex_page(task)
-                    await msg.edit_text(f"Extracted: {len(exd) sources from that page!...")
+                    await msg.edit_text(f"Extracted: {len(exd)} sources from that page!...")
                     for url in exd:
                       filename = url.split("/")[-1]  # Extract the filename from the URL
                       if '?' in filename:
