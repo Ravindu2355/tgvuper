@@ -5,6 +5,7 @@ from moviepy.editor import VideoFileClip
 from Func.up_progress import progress_for_pyrogram
 from res.header import get_h
 from res.cookie import r_cookies
+from PIL import Image
 
 def get_file_name_from_response(response):
     # Check if Content-Disposition header is present
@@ -73,7 +74,12 @@ async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
             thumbnail_path = None
             if not task['thumbnail_url']:
                 if "video" in file_type:
-                    thumbnail_path = generate_thumbnail(file_path)
+                    thumbnail_path = f'{time.time()}_thumb.jpg'
+                    with VideoFileClip(file_path) as video:
+                        duration = int(video.duration)
+                        frame = video.get_frame(3.0)
+                        img = Image.fromarray(frame)
+                        img.save(thumbnail_path, "JPEG")         
             start_time=time.time()
             if cap == "":
                 cap == task['url']
@@ -98,6 +104,8 @@ async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
                     progress_args=("🔰**Uploading!...**🔰\n\n",msg,start_time)
                 
                 )
+            if os.path.exists(thumbnail_path):
+                os.remove(thumbnail_path)
     except Exception as e:
         await client.send_message(chat_id,f"Err on upload : {e}")
         pass
