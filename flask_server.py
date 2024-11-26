@@ -28,7 +28,7 @@ def add_task():
     if url and chat_id:
         task = {'url': url, 'chat_id': chat_id, 'thumbnail_url': thumbnail_url, 'type': type}
         globals.task_list.append(task)  # Adding task to the global task list
-        return jsonify({"status": "success", "message": f"Task added for URL: {json.dump(task)}"}), 200
+        return jsonify({"status": "success", "message": f"Task added for URL: {url} type: {type} chat: {chat_id}"}), 200
     else:
         return jsonify({"status": "error", "message": "Missing url or chat_id"}), 400
 
