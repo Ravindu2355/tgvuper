@@ -23,7 +23,10 @@ async def p_url(client,message):
         id = str(message.chat.id)
         if id in authU:
             url= message.text
-            add_task_to_list(url, message.chat.id, thumbnail_url=None)
+            type=None
+            if 'html' in url:
+                 type="desi_page"
+            add_task_to_list(url, message.chat.id, thumbnail_url=None,type=type)
             await message.reply(f"Task added for URL: {url}")
         else:
             await message.reply("Sorry You are not user😄")
