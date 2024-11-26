@@ -13,9 +13,9 @@ plugins = dict(root="plugins")
 bot = Client(name="RVX_bot", bot_token=BOT_TOKEN, api_id=API_ID, api_hash=API_HASH, plugins=plugins)
 
 # Start task processing in the background
-start_task_processing(bot)
-start_flask_app()
 
+start_flask_app()
+start_task_processing(bot)
 
 @bot.on_message(filters.command("start"))
 async def _ms(client, message:types.Message):
