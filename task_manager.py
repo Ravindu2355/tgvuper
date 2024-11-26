@@ -63,7 +63,7 @@ async def process_tasks(client):
                     if os.path.exists(file_path):
                        os.remove(file_path)
                     await msg.delete()
-                     
+                    running=0
         await asyncio.sleep(2)  # Wait 2 seconds before checking again
 
 # Start the task processing in a background thread
