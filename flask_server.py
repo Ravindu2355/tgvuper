@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from task_manager import add_task_to_list, get_task_list
 from flask_cors import CORS
 from threading import Thread
-import os, asyncio, json
+import os, asyncio
 import globals
 # Initialize the Flask application
 app = Flask(__name__)
