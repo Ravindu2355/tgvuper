@@ -34,8 +34,7 @@ def add_task():
 def start_fls():
     app.run(host='0.0.0.0', port=8000)
 
-flask_t= Thread(target=start_fls)
-flask_t.start()
+
     
 #if __name__ == '__main__':
    #app.run(host='0.0.0.0', port=8000)
