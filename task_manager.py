@@ -18,6 +18,7 @@ def add_task_to_list(url, chat_id, thumbnail_url=None, type=None):
         'thumbnail_url': thumbnail_url,
         'type':type
     }
+    await asyncio.sleep(1)
     task_list.append(task)
     print("task add")
     return task_list
