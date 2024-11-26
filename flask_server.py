@@ -23,8 +23,12 @@ def add_task():
     data = request.json
     url = data.get('url')
     chat_id = data.get('chat_id')
-    thumbnail_url = data.get('thumbnail_url', None)
-    type = data.get('type',None)
+    thumbnail_url = data.get('thumbnail_url')
+    type = data.get('type')
+    if not type:
+        type=None
+    if not thumbnail_url:
+        thumbnail_url=None
     if url and chat_id:
         task = {'url': url, 'chat_id': chat_id, 'thumbnail_url': thumbnail_url, 'type': type}
         globals.task_list.append(task)  # Adding task to the global task list
