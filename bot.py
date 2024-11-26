@@ -1,6 +1,6 @@
 import os
 import time
-import threading
+import threading import Thread
 from pyrogram import Client, filters ,types
 from plugins.url_add import url_add_handler
 from plugins.check import check_handler
