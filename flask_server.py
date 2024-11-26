@@ -1,10 +1,14 @@
 from flask import Flask, request, jsonify
 from task_manager import add_task_to_list, get_task_list
 from flask_cors import CORS
-
+from threading import Thread
 # Initialize the Flask application
 app = Flask(__name__)
 CORS(app)
+
+def _tat(url, chat_id, thumbnail_url, type):
+    add_task_to_list(url, chat_id, thumbnail_url=thumbnail_url, type=type)
+
 
 @app.route('/')
 def f_home():
@@ -24,7 +28,8 @@ def add_task():
     type = data.get('type',None)
     
     if url and chat_id:
-        add_task_to_list(url, chat_id, thumbnail_url=thumbnail_url, type=type)
+        add_thread = Thread(target=_tat,args=(url, chat_id, thumbnail_url, type))
+        add_thread.start()
         #task = {"url": url, "chat_id": chat_id, "thumbnail_url": thumbnail_url, "type": type}
         #task_list.append(task)
         return jsonify({"status": "success", "message": f"Task added for URL: {url}"}), 200
