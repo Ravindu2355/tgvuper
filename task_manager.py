@@ -60,7 +60,7 @@ async def process_tasks(client):
                         await msg.delete()
                     running=0
             else:
-               msg= await client.send_message(chat_id,f"Starting Task!\n{task['type']} ")
+               msg= await client.send_message(chat_id,f"Starting Task!")
                filename = url.split("/")[-1]  # Extract the filename from the URL
                if '?' in filename:
                   filename = filename.split("?")[0]
