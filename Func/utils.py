@@ -55,6 +55,7 @@ async def download_file(client, msg, url, download_path, chat_id):
                     pm=progress_message
                     if round(diff % 10.00) == 0 or downloaded == total_size:
                        if old_pm != pm:
+                           old_pm = pm
                            await msg.edit_text(pm)  # Send progress message to user
         await msg.edit_text("downloaded!...")
         return download_path
