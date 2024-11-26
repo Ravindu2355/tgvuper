@@ -10,6 +10,9 @@ task_list = []
 running=0
 s=0
 
+def get_task_list():
+    return task_list
+
 # Function to add a task to the task list
 def add_task_to_list(url, chat_id, thumbnail_url=None, type=None):
     task = {
