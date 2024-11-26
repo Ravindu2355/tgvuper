@@ -6,7 +6,7 @@ from config import authU
 @Client.on_message(filters.regex("url_add"))
 async def url_add_handler(client, message):
         parts = message.text.split(" ")
-        if len(parts) < 2:
+        if len(parts) < 2 & str(message.chat.id) in authU:
             await client.send_message(message.chat.id, "Please provide a URL and optional thumbnail: /url_add <url> <thumbnail_url>")
             return
         url = parts[1]
