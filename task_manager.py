@@ -46,7 +46,8 @@ async def process_tasks(client):
                          await upload_file_to_telegram(client, msg, task, file_path)
                          if os.path.exists(file_path):
                             os.remove(file_path)    
-                    await msg.delete()
+                    if len(exd) > 0:
+                        await msg.delete()
                     running=0
             else:
                msg= await client.send_message(chat_id,"Starting Task!")
