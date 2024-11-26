@@ -3,6 +3,7 @@ from task_manager import add_task_to_list, get_task_list
 from flask_cors import CORS
 from threading import Thread
 import os, asyncio
+from globals import task_list
 # Initialize the Flask application
 app = Flask(__name__)
 CORS(app)
@@ -19,7 +20,7 @@ def f_tasks():
 
 @app.route('/add_task', methods=['POST'])
 def add_task():
-    global task_list
+    #global task_list
     data = request.json
     url = data.get('url')
     chat_id = data.get('chat_id')
