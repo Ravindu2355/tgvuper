@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from task_manager import add_task_to_list, task_list
+from task_manager import add_task_to_list, get_task_list
 from flask_cors import CORS
 
 # Initialize the Flask application
@@ -12,7 +12,7 @@ def f_home():
 
 @app.route('/tasks')
 def f_tasks():
-    return f"Currently {len(task_list)} tasks running!..",200
+    return f"Currently {len(get_task_list())} tasks running!..",200
 
 
 @app.route('/add_task', methods=['POST'])
@@ -24,9 +24,9 @@ def add_task():
     type = data.get('type',None)
     
     if url and chat_id:
-        #add_task_to_list(url, chat_id, thumbnail_url=thumbnail_url, type=type)
-        task = {"url": url, "chat_id": chat_id, "thumbnail_url": thumbnail_url, "type": type}
-        task_list.append(task)
+        add_task_to_list(url, chat_id, thumbnail_url=thumbnail_url, type=type)
+        #task = {"url": url, "chat_id": chat_id, "thumbnail_url": thumbnail_url, "type": type}
+        #task_list.append(task)
         return jsonify({"status": "success", "message": f"Task added for URL: {url}"}), 200
     else:
         return jsonify({"status": "error", "message": "Missing url or chat_id"}), 400
