@@ -38,7 +38,7 @@ def ex_vpg(url):
         print(f"Error fetching the webpage: {e}")
         return set()
 
-async def ex_pg(task):
+async def ex_page(task):
     global s_h, s_c
     for ob in site_data:
         v=site_data[ob]
