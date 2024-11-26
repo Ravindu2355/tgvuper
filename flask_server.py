@@ -25,7 +25,6 @@ def add_task():
     thumbnail_url = data.get('thumbnail_url', None)
     type = data.get('type',None)
     if url and chat_id:
-        global task_list
         task = {'url': url, 'chat_id': chat_id, 'thumbnail_url': thumbnail_url, 'type': type}
         task_list.append(task)  # Adding task to the global task list
         return jsonify({"status": "success", "message": f"Task added for URL: {url}"}), 200
