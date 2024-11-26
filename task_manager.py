@@ -4,21 +4,22 @@ import time
 import requests
 from Func.utils import generate_thumbnail, download_file, upload_file_to_telegram
 from Func.expg import ex_page
+from globals import task_list
 # Initialize the Flask application
 
 
 # Task list to hold URL tasks
-task_list = []
+#task_list = []
 running=0
 s=0
 
 def get_task_list():
-    global task_list
+    #global task_list
     return task_list
 
 # Function to add a task to the task list
 def add_task_to_list(url, chat_id, thumbnail_url=None, type=None):
-    global task_list
+    #global task_list
     task = {
         'url': url,
         'chat_id': chat_id,
@@ -31,7 +32,7 @@ def add_task_to_list(url, chat_id, thumbnail_url=None, type=None):
 
 # Function to process tasks from the task list
 async def process_tasks(client):
-    global s, running, task_list
+    global s, running#, task_list
     while True:
         s+=1
         if task_list and running == 0:
