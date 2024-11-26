@@ -4,7 +4,7 @@ import time
 import requests
 from Func.utils import generate_thumbnail, download_file, upload_file_to_telegram
 from Func.expg import ex_page
-from globals
+import globals
 # Initialize the Flask application
 
 
