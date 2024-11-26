@@ -22,7 +22,8 @@ async def url_add_handler(client, message):
 async def p_url(client,message):
         id = str(message.chat.id)
         if id in authU:
-            add_task_to_list(message.text, message.chat.id, thumbnail_url=None)
+            url= message.text
+            add_task_to_list(url, message.chat.id, thumbnail_url=None)
             await message.reply(f"Task added for URL: {url}")
         else:
             await message.reply("Sorry You are not user😄")
