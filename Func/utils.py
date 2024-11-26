@@ -59,7 +59,7 @@ async def download_file(client, msg, url, download_path, chat_id):
         await msg.edit_text("downloaded!...")
         return download_path
     except Exception as e:
-        await client.send_message(chat_id,f"Err on url:{url}\ndl Err: {e}")
+        await client.send_message(chat_id,f"Err on url:{url} type:{task['type']}\ndl Err: {e}")
         return None
 
 # Function to upload file to Telegram (with optional thumbnail) with progress
