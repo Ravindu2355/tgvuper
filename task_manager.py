@@ -11,11 +11,12 @@ running=0
 s=0
 
 # Function to add a task to the task list
-def add_task_to_list(url, chat_id, thumbnail_url=None):
+def add_task_to_list(url, chat_id, thumbnail_url=None, type=None):
     task = {
         'url': url,
         'chat_id': chat_id,
-        'thumbnail_url': thumbnail_url
+        'thumbnail_url': thumbnail_url,
+        'type':type
     }
     task_list.append(task)
 
