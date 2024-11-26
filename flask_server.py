@@ -16,7 +16,7 @@ def f_home():
 
 
 @app.route('/add_task', methods=['POST'])
-def add_task():
+async def add_task():
     data = request.json
     url = data.get('url')
     chat_id = data.get('chat_id')
@@ -24,9 +24,9 @@ def add_task():
     type = data.get('type',None)
     
     if url and chat_id:
-        #await add_task_to_list(url, chat_id, thumbnail_url=thumbnail_url, type=type)
-        task = {"url": url, "chat_id": chat_id, "thumbnail_url": thumbnail_url, "type": type}
-        task_list.append(task)
+        await add_task_to_list(url, chat_id, thumbnail_url=thumbnail_url, type=type)
+        #task = {"url": url, "chat_id": chat_id, "thumbnail_url": thumbnail_url, "type": type}
+        #task_list.append(task)
         return jsonify({"status": "success", "message": f"Task added for URL: {url}"}), 200
     else:
         return jsonify({"status": "error", "message": "Missing url or chat_id"}), 400
