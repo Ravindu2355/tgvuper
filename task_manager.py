@@ -73,7 +73,7 @@ async def process_tasks(client):
                        os.remove(file_path)
                     await msg.delete()
                     running=0
-        await asyncio.sleep(2)  # Wait 2 seconds before checking again
+        await asyncio.sleep(10)  # Wait 2 seconds before checking again
 
 
 
