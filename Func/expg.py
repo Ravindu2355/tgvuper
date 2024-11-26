@@ -7,7 +7,7 @@ s_h = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
 }
 s_c={}
-def ex_vpg:
+def ex_vpg(url):
     try:
         # Send a GET request to the webpage
         response = requests.get(url,headers=s_h,cookies=s_c)
