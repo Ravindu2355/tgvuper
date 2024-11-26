@@ -16,9 +16,10 @@ def add_task():
     url = data.get('url')
     chat_id = data.get('chat_id')
     thumbnail_url = data.get('thumbnail_url', None)
+    type = data.get('type',None)
     
     if url and chat_id:
-        add_task_to_list(url, chat_id, thumbnail_url)
+        add_task_to_list(url, chat_id, thumbnail_url, type)
         return jsonify({"status": "success", "message": f"Task added for URL: {url}"}), 200
     else:
         return jsonify({"status": "error", "message": "Missing url or chat_id"}), 400
