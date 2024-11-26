@@ -34,7 +34,7 @@ def generate_thumbnail(video_path, thumbnail_path="thumbnail.jpg"):
 async def download_file(client, msg, url, download_path, chat_id):
     try:
         #msg = await client.send_message(chat_id,"starting download...")
-        headers=get_h()
+        headers=get_h(url)
         cookies=r_cookies()
         response = requests.get(url, headers=headers, cookies=cookies, stream=True)
         total_size = int(response.headers.get('content-length', 0))
