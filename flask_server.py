@@ -6,9 +6,6 @@ from threading import Thread
 app = Flask(__name__)
 CORS(app)
 
-def _tat(url, chat_id, thumbnail_url, type):
-    add_task_to_list(url, chat_id, thumbnail_url=thumbnail_url, type=type)
-
 
 @app.route('/')
 def f_home():
@@ -21,17 +18,16 @@ def f_tasks():
 
 @app.route('/add_task', methods=['POST'])
 def add_task():
+    global task_list
     data = request.json
     url = data.get('url')
     chat_id = data.get('chat_id')
     thumbnail_url = data.get('thumbnail_url', None)
     type = data.get('type',None)
-    
     if url and chat_id:
-        add_thread = Thread(target=_tat,args=(url, chat_id, thumbnail_url, type))
-        add_thread.start()
-        #task = {"url": url, "chat_id": chat_id, "thumbnail_url": thumbnail_url, "type": type}
-        #task_list.append(task)
+        global task_list
+        task = {'url': url, 'chat_id': chat_id, 'thumbnail_url': thumbnail_url, 'type': type}
+        task_list.append(task)  # Adding task to the global task list
         return jsonify({"status": "success", "message": f"Task added for URL: {url}"}), 200
     else:
         return jsonify({"status": "error", "message": "Missing url or chat_id"}), 400
