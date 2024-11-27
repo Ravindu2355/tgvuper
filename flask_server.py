@@ -36,6 +36,17 @@ def add_task():
     else:
         return jsonify({"status": "error", "message": "Missing url or chat_id"}), 400
 
+@app.route('/multi',methods=['POST'])
+def _mt_a():
+    data = request.json
+    tasks = data.get('tasks')
+    if tasks and len(tasks) > 0:
+        globals.task_list.extend(tasks)
+        return jsonify({"status": "success", "message": f"Tasks added for {len(tasks)} URLS"}), 200
+    else:
+        return jsonify({"status": "error", "message": "Missing tasks"}), 400
+
+
 def start_fls():
     app.run(host='0.0.0.0', port=8000)
 
