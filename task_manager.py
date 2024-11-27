@@ -42,6 +42,7 @@ async def process_tasks(client):
             chat_id = task['chat_id']
             thumbnail_url = task['thumbnail_url']
             if task['type'] and 'page' in task['type']:
+                try:
                     msg= await client.send_message(chat_id,"Starting page Extract!")
                     exd = await ex_page(task)
                     await msg.edit_text(f"Extracted: {len(exd)} sources from that page!...")
@@ -59,20 +60,25 @@ async def process_tasks(client):
                     if len(exd) > 0:
                         await msg.delete()
                     running=0
+                except Exception as e:
+                    print(e)
             else:
-               msg= await client.send_message(chat_id,f"Starting Task!")
-               filename = url.split("/")[-1]  # Extract the filename from the URL
-               if '?' in filename:
-                  filename = filename.split("?")[0]
-               if "." not in filename:
-                  filename = f"{time.time()}.mp4"
-               file_path = await download_file(client, msg, url, filename, chat_id)
-               if file_path:                
-                    await upload_file_to_telegram(client, msg, task, file_path)
-                    if os.path.exists(file_path):
-                       os.remove(file_path)
-                    await msg.delete()
-                    running=0
+                try:
+                  msg= await client.send_message(chat_id,f"Starting Task!")
+                  filename = url.split("/")[-1]  # Extract the filename from the URL
+                  if '?' in filename:
+                     filename = filename.split("?")[0]
+                  if "." not in filename:
+                     filename = f"{time.time()}.mp4"
+                  file_path = await download_file(client, msg, url, filename, chat_id)
+                  if file_path:                
+                      await upload_file_to_telegram(client, msg, task, file_path)
+                      if os.path.exists(file_path):
+                         os.remove(file_path)
+                      await msg.delete()
+                      running=0
+                except Exception as e:
+                    print(e)
         await asyncio.sleep(10)  # Wait 2 seconds before checking again
 
 
