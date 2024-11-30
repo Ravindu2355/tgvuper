@@ -2,6 +2,7 @@ from threading import Thread
 import os, asyncio
 import time
 import requests
+from config import sleep_time
 from Func.utils import download_file, upload_file_to_telegram
 from Func.expg import ex_page
 import globals
@@ -79,7 +80,7 @@ async def process_tasks(client):
                       running=0
                 except Exception as e:
                     print(e)
-        await asyncio.sleep(30)  # Wait 2 seconds before checking again
+        await asyncio.sleep(sleep_time)  # Wait 2 seconds before checking again
 
 
 
