@@ -79,7 +79,7 @@ async def process_tasks(client):
                       running=0
                 except Exception as e:
                     print(e)
-        await asyncio.sleep(10)  # Wait 2 seconds before checking again
+        await asyncio.sleep(30)  # Wait 2 seconds before checking again
 
 
 
