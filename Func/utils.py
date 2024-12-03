@@ -2,10 +2,22 @@ import os, time
 import requests
 from mimetypes import guess_type
 from moviepy.editor import VideoFileClip
-from Func.up_progress import progress_for_pyrogram
+from Func.up_progress import progress_for_pyrogram, humanbytes
 from res.header import get_h
 from res.cookie import r_cookies
 from PIL import Image
+
+def get_file_size(file_path):
+    try:
+        size_bytes = os.path.getsize(file_path)
+        for unit in ['bytes', 'KB', 'MB', 'GB', 'TB']:
+            if size_bytes < 1024.0:
+                return f"{size_bytes:.2f} {unit}"
+            size_bytes /= 1024.0
+    except FileNotFoundError:
+        return "Error: File not found"
+
+
 
 def get_file_name_from_response(response):
     # Check if Content-Disposition header is present
@@ -34,6 +46,7 @@ async def download_file(client, msg, url, download_path, chat_id):
         downloaded = 0
         start_t=time.time()
         old_pm=""
+        await msg.edit_text(f"starting download \nsize: {humanbytes(total_size)}")
         with open(download_path, "wb") as file:
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:
@@ -47,8 +60,8 @@ async def download_file(client, msg, url, download_path, chat_id):
                     if round(diff % 10.00) == 0 or downloaded == total_size:
                        if old_pm != pm:
                            old_pm = pm
-                           await msg.edit_text(pm)  # Send progress message to user
-        await msg.edit_text("downloaded!...")
+                           #await msg.edit_text(pm)  # Send progress message to user
+        #await msg.edit_text("downloaded!...")
         return download_path
     except Exception as e:
         await client.send_message(chat_id,f"Err on url:{url}\ndl Err: {e}")
@@ -58,7 +71,8 @@ async def download_file(client, msg, url, download_path, chat_id):
 async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
     chat_id=task['chat_id']
     try:
-        await msg.edit_text("Upload Starting!...")
+        sz = get_file_size(file_path)
+        await msg.edit_text(f"Upload Starting!...{sz}")
         if file_path:
             file_type = guess_type(file_path)[0]
             thumbnail_path = None
@@ -82,8 +96,8 @@ async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
                     caption=f"Video: {cap}",
                     thumb=thumbnail_path if thumbnail_path else task['thumbnail_url'],
                     supports_streaming=True,  # Ensure the video is streamable
-                    progress=progress_for_pyrogram,
-                    progress_args=("🔰**Uploading!...**🔰\n\n",msg,start_time)
+                    #progress=progress_for_pyrogram,
+                    #progress_args=("🔰**Uploading!...**🔰\n\n",msg,start_time)
                 )
             else:
                 await client.send_document(
@@ -92,8 +106,8 @@ async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
                     caption=f"File: {cap}",
                     thumb=thumbnail_path if thumbnail_path else task['thumbnail_url'],
                     supports_streaming=True,  # Ensure the video is streamable
-                    progress=progress_for_pyrogram,
-                    progress_args=("🔰**Uploading!...**🔰\n\n",msg,start_time)
+                    #progress=progress_for_pyrogram,
+                    #progress_args=("🔰**Uploading!...**🔰\n\n",msg,start_time)
                 
                 )
             if os.path.exists(thumbnail_path):
