@@ -46,7 +46,7 @@ async def download_file(client, msg, url, download_path, chat_id):
         downloaded = 0
         start_t=time.time()
         old_pm=""
-        await msg.edit_text(f"starting download \nsize: {humanbytes(total_size)}")
+        await msg.edit_text(f"starting download \nsize: {humanbytes(total_size)}\nname: {download_path}")
         with open(download_path, "wb") as file:
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:
