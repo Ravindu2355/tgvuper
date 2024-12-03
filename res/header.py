@@ -13,11 +13,10 @@ sites={
 }
 
 def get_h(url):
-  for k in sites:
-    if k in url:
-      return sites[k]
-    else:
-      return s_h
+    for k in sites:
+        if k in url:
+            return sites[k]
+    return s_h  
 
 def set_h(k,v):
   if k and v:
