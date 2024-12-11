@@ -91,49 +91,55 @@ async def download_file(client, msg, url, download_path, chat_id):
 
 # Function to upload file to Telegram (with optional thumbnail) with progress
 async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
-    chat_id=task['chat_id']
+    chat_id = task['chat_id']
     try:
         sz = get_file_size(file_path)
-        await msg.edit_text(f"Upload Starting!...{sz}")
+        await msg.edit_text(f"Upload Starting!... {sz}")
         if file_path:
             file_type = guess_type(file_path)[0]
             thumbnail_path = None
-            duration= 0
-            if not task['thumbnail_url']:
-                if "video" in file_type:
-                    thumbnail_path = f'{time.time()}_thumb.jpg'
+            duration = 0
+
+            # Generate a thumbnail if no thumbnail URL is provided and the file is a video
+            if not task['thumbnail_url'] and file_type and "video" in file_type:
+                thumbnail_path = f"{time.time()}_thumb.jpg"
+                try:
                     with VideoFileClip(file_path) as video:
                         duration = int(video.duration)
-                        frame = video.get_frame(3.0)
+                        frame = video.get_frame(3.0)  # Get a frame at 3 seconds
                         img = Image.fromarray(frame)
-                        img.save(thumbnail_path, "JPEG")         
-            start_time=time.time()
-            if cap == "":
-                cap == task['url']
+                        img.save(thumbnail_path, "JPEG")
+                except Exception as e:
+                    print(f"Error generating thumbnail: {e}")
+            
+            start_time = time.time()
+
+            # Default caption to task's URL if not provided
+            if not cap:
+                cap = task['url']
+
+            # Check if the file is a video or document
             if file_type and "video" in file_type:
                 await client.send_video(
-                    chat_id=task['chat_id'],
+                    chat_id=chat_id,
                     video=file_path,
                     duration=duration,
                     caption=f"Video: {cap}",
                     thumb=thumbnail_path if thumbnail_path else task['thumbnail_url'],
                     supports_streaming=True,  # Ensure the video is streamable
-                    #progress=progress_for_pyrogram,
-                    #progress_args=("🔰**Uploading!...**🔰\n\n",msg,start_time)
                 )
             else:
                 await client.send_document(
-                    chat_id=task['chat_id'],
+                    chat_id=chat_id,
                     document=file_path,
                     caption=f"File: {cap}",
                     thumb=thumbnail_path if thumbnail_path else task['thumbnail_url'],
-                    supports_streaming=True,  # Ensure the video is streamable
-                    #progress=progress_for_pyrogram,
-                    #progress_args=("🔰**Uploading!...**🔰\n\n",msg,start_time)
-                
                 )
-            if os.path.exists(thumbnail_path):
+
+            # Clean up the thumbnail file
+            if thumbnail_path and os.path.exists(thumbnail_path):
                 os.remove(thumbnail_path)
+
     except Exception as e:
-        await client.send_message(chat_id,f"Err on upload : {e}")
-        pass
+        await client.send_message(chat_id, f"Error on upload: {e}")
+
