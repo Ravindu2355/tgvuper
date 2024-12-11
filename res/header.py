@@ -19,8 +19,9 @@ def get_h(url):
     return s_h  
 
 def set_h(k,v):
-  if k and v:
-    s_h[k]=v
+    global s_h
+    if k and v:
+        s_h[k]=v
 
 def res_h():
   s_h = {
