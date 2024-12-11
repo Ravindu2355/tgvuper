@@ -18,35 +18,55 @@ def get_file_size(file_path):
         return "Error: File not found"
 
 
-
 def get_file_name_from_response(response):
     # Check if Content-Disposition header is present
     content_disposition = response.headers.get('Content-Disposition')
     if content_disposition:
-        # Extract the filename from the Content-Disposition header
-        filename_part = content_disposition.split('filename=')[-1]
-        filename = filename_part.strip(' "')
-        return filename
+        try:
+            # Extract the filename from the Content-Disposition header
+            filename_part = content_disposition.split('filename=')[-1]
+            filename = filename_part.strip(' "')
+            if filename:
+                return filename
+        except Exception as e:
+            print(f"Error extracting filename from Content-Disposition: {e}")
     
-    # Fallback to extracting the file name from the URL
-    return f"video_{str(time.time())}.mp4"
+    # Fallback to extracting the filename from the URL
+    url_path = response.url.split("/")[-1]
+    if url_path:
+        if '?' in url_path:
+            url_path = url_path.split("?")[0]
+        return url_path
     
-# Function to generate a thumbnail from the video if no thumbnail is provided
+    # Final fallback to a default filename
+    return f"video_{str(int(time.time()))}.mp4"
+
+
 
 # Function to download file from the URL with progress
 async def download_file(client, msg, url, download_path, chat_id):
     try:
-        #msg = await client.send_message(chat_id,"starting download...")
-        headers=get_h(url)
-        cookies=r_cookies()
+        headers = get_h(url)
+        cookies = r_cookies()
         response = requests.get(url, headers=headers, cookies=cookies, stream=True)
+        
+        # Check for successful response
+        if response.status_code != 200:
+            await client.send_message(chat_id, f"Failed to fetch URL: {url}\nStatus code: {response.status_code}")
+            return None
+
+        # Get the filename
+        ndl = get_file_name_from_response(response)
+        if not ndl:  # Ensure filename is valid
+            ndl = f"video_{str(int(time.time()))}.mp4"
+        download_path = ndl
+
         total_size = int(response.headers.get('content-length', 0))
-        ndl=get_file_name_from_response(response)
-        download_path= ndl
         downloaded = 0
-        start_t=time.time()
-        old_pm=""
-        await msg.edit_text(f"starting download \nsize: {humanbytes(total_size)}\nname: {download_path}")
+        start_t = time.time()
+        old_pm = ""
+
+        await msg.edit_text(f"Starting download\nSize: {humanbytes(total_size)}\nName: {download_path}")
         with open(download_path, "wb") as file:
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:
@@ -54,17 +74,19 @@ async def download_file(client, msg, url, download_path, chat_id):
                     downloaded += len(chunk)
                     progress = (downloaded / total_size) * 100 if total_size > 0 else 0
                     progress_message = f"Downloading... {progress:.2f}%"
-                    now=time.time()
+                    now = time.time()
                     diff = now - start_t
-                    pm=progress_message
+                    pm = progress_message
                     if round(diff % 10.00) == 0 or downloaded == total_size:
-                       if old_pm != pm:
-                           old_pm = pm
-                           #await msg.edit_text(pm)  # Send progress message to user
-        #await msg.edit_text("downloaded!...")
+                        if old_pm != pm:
+                            old_pm = pm
+                            # Uncomment to send progress updates
+                            # await msg.edit_text(pm)
+
         return download_path
+
     except Exception as e:
-        await client.send_message(chat_id,f"Err on url:{url}\ndl Err: {e}")
+        await client.send_message(chat_id, f"Error on URL: {url}\nDownload error: {e}")
         return None
 
 # Function to upload file to Telegram (with optional thumbnail) with progress
