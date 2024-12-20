@@ -98,7 +98,8 @@ async def process_tasks(client):
         except Exception as e:
             print(f"Unexpected error in main loop: {e}")
             await asyncio.sleep(1)  # Briefly wait before retrying to avoid a tight error loop
-
+            running = 0
+            
         await asyncio.sleep(sleep_time)  # Wait 2 seconds before checking again
 
 
