@@ -1,4 +1,5 @@
 import os, time
+import requests
 from mimetypes import guess_type
 from moviepy.editor import VideoFileClip
 from Func.up_progress import progress_for_pyrogram, humanbytes
