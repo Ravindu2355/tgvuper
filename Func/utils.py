@@ -121,6 +121,7 @@ async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
 
             # Progress callback function
             async def progress_callback(current, total, message):
+                nonlocal old_pm
                 progress = (current / total) * 100
                 progress_message = f"Uploading... {progress:.2f}%"
                 now = time.time()
