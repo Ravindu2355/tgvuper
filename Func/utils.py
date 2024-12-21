@@ -97,7 +97,7 @@ async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
             duration = 0
 
             # Generate a thumbnail if no thumbnail URL is provided and the file is a video
-            if not task.get('thumbnail_url') and file_type and "video" in file_type:
+            if not task.get('thumbnail_url'):
                 if not thumbnail_path:
                     thumbnail_path = f"{time.time()}_thumb.jpg"
                 try:
@@ -107,7 +107,9 @@ async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
                         img = Image.fromarray(frame)
                         img.save(thumbnail_path, "JPEG")
                 except Exception as e:
-                    print(f"Error generating thumbnail: {e}")
+                    thumbnail_path=""
+                    await msg.reply(f"Error generating thumbnail: {e}")
+                    pass
             start_time = time.time()
             total_size = os.path.getsize(file_path)
             uploaded = 0
