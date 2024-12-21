@@ -31,8 +31,8 @@ async def bunkr_bulk(client, message):
     try:
         # Get chat_id and URL from message
         args = message.text.split()
-        if len(args) != 2:
-            await message.reply("Usage: /bunkrBulk <chat_id> <main_url>")
+        if len(args) != 3:
+            await message.reply("Usage: /bunkrBulk `chat_id` `main_url`")
             return
         
         chat_id, page_url = args[1], args[2]
