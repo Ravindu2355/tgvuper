@@ -140,7 +140,7 @@ async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
                         caption=f"Video: {cap}",
                         thumb=thumbnail_path if not task.get('thumbnail_url') else task['thumbnail_url'],
                         supports_streaming=True,
-                        progress_callback=progress_callback,
+                        progress=progress_callback,
                         progress_args=(msg,)
                     )
                 else:
@@ -159,7 +159,7 @@ async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
                        document=file_path,
                        caption=f"File: {cap}",
                        thumb= thumbnail_path if not task.get('thumbnail_url') else task['thumbnail_url'],
-                       progress_callback=progress_callback,
+                       progress=progress_callback,
                        progress_args=(msg,)
                     )
                 else:
