@@ -61,12 +61,12 @@ async def download_file(client, msg, url, download_path, chat_id):
         await msg.edit_text(f"Starting download\nSize: {humanbytes(total_size)}\nName: {download_path}")
         
         # Only show progress if file is >50MB (50 * 1024 * 1024 bytes)
-        if total_size > 50 * 1024 * 1024:
-            with open(download_path, "wb") as file:
-                for chunk in response.iter_content(chunk_size=1024):
-                    if chunk:
-                        file.write(chunk)
-                        downloaded += len(chunk)
+        with open(download_path, "wb") as file:
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    file.write(chunk)
+                    downloaded += len(chunk)
+                    if total_size > 50 * 1024 * 1024:
                         progress = (downloaded / total_size) * 100 if total_size > 0 else 0
                         progress_message = f"Downloading... {progress:.2f}%"
                         now = time.time()
@@ -152,12 +152,22 @@ async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
                     )
             else:
                 # Upload file as a document
-                await client.send_document(
-                    chat_id=chat_id,
-                    document=file_path,
-                    caption=f"File: {cap}",
-                    thumb=thumbnail_path if thumbnail_path else task['thumbnail_url'],
-                )
+                if total_size > 50 * 1024 * 1024:
+                    await client.send_document(
+                       chat_id=chat_id,
+                       document=file_path,
+                       caption=f"File: {cap}",
+                       thumb=thumbnail_path if thumbnail_path else task['thumbnail_url'],
+                       progress_callback=progress_callback,
+                       progress_args=(msg,)
+                    )
+                else:
+                    await client.send_document(
+                       chat_id=chat_id,
+                       document=file_path,
+                       caption=f"File: {cap}",
+                       thumb=thumbnail_path if thumbnail_path else task['thumbnail_url'],
+                    )
 
             # Clean up the thumbnail file
             if thumbnail_path and os.path.exists(thumbnail_path):
