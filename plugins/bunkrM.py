@@ -60,7 +60,7 @@ async def bunkr_bulk(client, message):
         task_list.extend(payload_array)
         
         # Show the updated task list
-        await message.reply(f"Task list updated with {len(payload_array)} videos. Chat ID: {chat_id}\n\nTask List:\n{task_list}")
+        await message.reply(f"**Task list updated!\n\nAdd: {len(payload_array)} videos.\n\nChat ID: {chat_id}\n\nTask List:\n{len(task_list)} videos**")
         
     except Exception as e:
         await message.reply(f"An error occurred: {str(e)}")
