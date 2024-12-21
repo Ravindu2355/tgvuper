@@ -97,7 +97,7 @@ async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
             duration = 0
 
             # Generate a thumbnail if no thumbnail URL is provided and the file is a video
-            if not task['thumbnail_url'] and file_type and "video" in file_type:
+            if not task.get('thumbnail_url') and file_type and "video" in file_type:
                 thumbnail_path = f"{time.time()}_thumb.jpg"
                 try:
                     with VideoFileClip(file_path) as video:
@@ -138,7 +138,7 @@ async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
                         video=file_path,
                         duration=duration,
                         caption=f"Video: {cap}",
-                        thumb=thumbnail_path if thumbnail_path else task['thumbnail_url'],
+                        thumb=thumbnail_path if not task.get('thumbnail_url') else task['thumbnail_url'],
                         supports_streaming=True,
                         progress_callback=progress_callback,
                         progress_args=(msg,)
@@ -149,7 +149,7 @@ async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
                         video=file_path,
                         duration=duration,
                         caption=f"Video: {cap}",
-                        thumb=thumbnail_path if thumbnail_path else task['thumbnail_url'],
+                        thumb= thumbnail_path if not task.get('thumbnail_url') else task['thumbnail_url'],
                     )
             else:
                 # Upload file as a document
@@ -158,7 +158,7 @@ async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
                        chat_id=chat_id,
                        document=file_path,
                        caption=f"File: {cap}",
-                       thumb=thumbnail_path if thumbnail_path else task['thumbnail_url'],
+                       thumb= thumbnail_path if not task.get('thumbnail_url') else task['thumbnail_url'],
                        progress_callback=progress_callback,
                        progress_args=(msg,)
                     )
@@ -167,7 +167,7 @@ async def upload_file_to_telegram(client, msg, task, file_path, cap=""):
                        chat_id=chat_id,
                        document=file_path,
                        caption=f"File: {cap}",
-                       thumb=thumbnail_path if thumbnail_path else task['thumbnail_url'],
+                       thumb= thumbnail_path if not task.get('thumbnail_url') else task['thumbnail_url'],
                     )
 
             # Clean up the thumbnail file
