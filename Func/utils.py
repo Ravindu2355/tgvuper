@@ -6,7 +6,7 @@ from Func.up_progress import progress_for_pyrogram, humanbytes
 from res.header import get_h
 from res.cookie import r_cookies
 from PIL import Image
-from config import Config
+from config import TgSizeLimit
 
 def is_file_within_size_limit_from_url(url, size_limit=2 * 1024 * 1024 * 1024):  # 2GB in bytes
     try:
@@ -86,8 +86,8 @@ async def download_file(client, msg, url, download_path, chat_id):
         total_size = int(response.headers.get('content-length', 0))
         if total_size == 0:
             await client.send_message(chat_id, "Failed to detect size it detected as 0-bytes.\n\n**But trying to download...**")
-        if total_size >= Config.TgSizeLimit:
-            await client.send_message(chat_id, f"**Sorry...**\n\nI can not upload Files larger than {humanbytes(Config.TgSizeLimit)}")
+        if total_size >= TgSizeLimit:
+            await client.send_message(chat_id, f"**Sorry...**\n\nI can not upload Files larger than {humanbytes(TgSizeLimit)}")
             return None
         downloaded = 0
         start_t = time.time()
