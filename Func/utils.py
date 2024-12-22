@@ -83,6 +83,11 @@ async def download_file(client, msg, url, download_path, chat_id):
         download_path = ndl
 
         total_size = int(response.headers.get('content-length', 0))
+        if total_size == 0:
+            await client.send_message(chat_id, "Failed to detect size it detected as 0-bytes.\n\n**But trying to download...**")
+        if total_size >= Config.TgSizeLimit:
+            await client.send_message(chat_id, f"**Sorry...**\n\nI can not upload Files larger than {humanbytes(Config.TgSizeLimit)}")
+            return None
         downloaded = 0
         start_t = time.time()
         old_pm = ""
