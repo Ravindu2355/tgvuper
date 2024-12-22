@@ -6,6 +6,7 @@ from Func.up_progress import progress_for_pyrogram, humanbytes
 from res.header import get_h
 from res.cookie import r_cookies
 from PIL import Image
+from config import Config
 
 def is_file_within_size_limit_from_url(url, size_limit=2 * 1024 * 1024 * 1024):  # 2GB in bytes
     try:
