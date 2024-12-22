@@ -5,8 +5,11 @@ from globals import task_list
 
 
 # Regular expression to check if the URL is a valid Bunkrr URL with /a/ or /v/
-def is_valid_bunkr_url(url):
+def iis_valid_bunkr_url(url):
     return bool(re.match(r"https:\/\/bunkrr.*?\/a\/[\w\d]+", url))
+
+def is_valid_bunkr_url(url):
+    return bool(re.match(r"https:\/\/bunkr{1,2}\.[\w.]+\/a\/[\w\d]+", url))
 
 # Extract video URLs from a Bunkrr page
 def extract_video_urls(page_url):
