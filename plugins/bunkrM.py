@@ -13,7 +13,8 @@ def is_valid_bunkr_url(url):
 
 # Extract video URLs from a Bunkrr page
 def extract_video_urls(page_url):
-    video_url_pattern = r"https?:\/\/.*?\/v\/[\w\d]+"
+    #video_url_pattern = r"https?:\/\/.*?\/v\/[\w\d]+"
+    video_url_pattern = r"https?:\/\/.*?\/v\/[\w\d\-]+"
     try:
         response = requests.get(page_url)
         response.raise_for_status()
