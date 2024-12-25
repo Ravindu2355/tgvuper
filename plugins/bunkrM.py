@@ -12,7 +12,8 @@ def iis_valid_bunkr_url(url):
 # Extract video URLs from a Bunkrr page
 def extract_video_urls(page_url):
     #video_url_pattern = r"https?:\/\/.*?\/v\/[\w\d]+"
-    video_url_pattern = r"https?:\/\/.*?\/v\/[\w\d\-]+"
+    #video_url_pattern = r"https?:\/\/.*?\/v\/[\w\d\-]+"
+    video_url_pattern = r"https?:\/\/.*?\/v\/.*"
     try:
         response = requests.get(page_url)
         response.raise_for_status()
@@ -41,7 +42,7 @@ async def bunkr_bulk(client, message):
         
         # Validate the Bunkrr URL
         if not is_valid_bunkr_url(page_url):
-            await message.reply(f"Invalid Bunkrr URL: {page_url}. Please provide a valid URL with /a/ or /v/ path.")
+            await message.reply(f"Invalid Bunkrr URL: {page_url}. Please provide a valid URL with /a/ path.")
             return
         
         # Step 1: Extract video URLs
