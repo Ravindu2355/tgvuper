@@ -50,7 +50,8 @@ async def process_tasks(client):
                         exd = await ex_page(task)  # Extract page sources
                         await asyncio.sleep(1)
                         await msg.edit_text(f"Extracted: {len(exd)} sources from that page!")
-                        
+                        if len(exd) == 0:
+                            await msg.reply(f"No sources from this: {task['url']}")
                         for url in exd:
                             filename = url.split("/")[-1]  # Extract the filename from the URL
                             if '?' in filename:
