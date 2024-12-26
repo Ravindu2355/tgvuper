@@ -7,6 +7,7 @@ from res.header import get_h
 from res.cookie import r_cookies
 from PIL import Image
 from config import TgSizeLimit
+from Func.tomp4 import convert_video_to_mp4
 
 def is_file_within_size_limit_from_url(url, size_limit=2 * 1024 * 1024 * 1024):  # 2GB in bytes
     try:
@@ -113,8 +114,12 @@ async def download_file(client, msg, url, download_path, chat_id):
                                 old_pm = pm
                                 await msg.edit_text(pm)
 
-        return download_path
-
+        if download_path.endswith(".mp4"):
+            return download_path
+        else:
+            await msg.edit_text(f"😰Not a mp4.trying to convert!")
+            newdl_path = await convert_video_to_mp4(msg,download_path)
+            return newdl_path
     except Exception as e:
         await client.send_message(chat_id, f"Error on URL: {url}\nDownload error: {e}")
         return None
