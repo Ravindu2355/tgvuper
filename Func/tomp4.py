@@ -9,10 +9,10 @@ from pyrogram.types import Message
 time_regex = re.compile(r"time=(\d+):(\d+):(\d+\.\d+)")
 
 # Function to get video duration using FFprobe
-def get_video_duration(m3u8_url):
+def get_video_duration(input_path):
     try:
         ffprobe_command = [
-            "ffprobe", "-i", m3u8_url, "-show_entries", "format=duration",
+            "ffprobe", "-i", input_path, "-show_entries", "format=duration",
             "-v", "quiet", "-of", "csv=p=0"
         ]
         result = subprocess.run(ffprobe_command, capture_output=True, text=True)
@@ -23,6 +23,10 @@ def get_video_duration(m3u8_url):
 
 # Function to run FFmpeg and update progress
 async def convert_video_to_mp4(message: Message, input):
+    duration = get_video_duration(input)  # Get video duration in seconds
+    if not duration:
+        await message.edit_text("❌ Failed to retrieve video duration.So it cannot convert..\n**But I will upload it...**")
+        return input
     ctype=""
     ename=""
     if "." in input:
