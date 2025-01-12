@@ -2,6 +2,22 @@ import re
 import requests
 from pyrogram import Client, filters
 from globals import task_list, patterns
+from urllib.parse import urlparse
+
+def transform_links(matches, base_url):
+    transformed_links = []
+    for url in matches:
+        if url.startswith("/"):  # Check if it's a relative URL
+            transformed_links.append(f"{base_url}{url}")  # Prepend base URL
+        else:
+            transformed_links.append(url)  # Leave absolute URLs unchanged
+    return transformed_links
+
+def get_base_url(url):
+    parsed_url = urlparse(url)
+    # Combine the scheme (http/https) and netloc (domain)
+    return f"{parsed_url.scheme}://{parsed_url.netloc}"
+
 
 def is_valid_bunkr_url(url):
     return bool(re.match(r"https:\/\/bunkr+\.([\w.]+)\/a\/[\w\d]+", url))
@@ -16,10 +32,11 @@ def extract_video_urls(page_url):
     #video_url_pattern = r"https?:\/\/.*?\/v\/[^\"]+"
     video_url_pattern = patterns["bunkr_video"]
     try:
+        baseu = get_base_url(page_url)
         response = requests.get(page_url)
         response.raise_for_status()
         html_content = response.text
-        video_urls = list(set(re.findall(video_url_pattern, html_content)))  # Remove duplicates
+        video_urls = transform_links(list(set(re.findall(video_url_pattern, html_content))),baseu)  # Remove duplicates
         return video_urls
     except requests.RequestException as e:
         return None  # Return None in case of error
