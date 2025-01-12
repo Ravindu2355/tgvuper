@@ -1,7 +1,7 @@
 import re
 import requests
 from pyrogram import Client, filters
-from globals import task_list
+from globals import task_list, patterns
 
 def is_valid_bunkr_url(url):
     return bool(re.match(r"https:\/\/bunkr+\.([\w.]+)\/a\/[\w\d]+", url))
@@ -13,7 +13,8 @@ def iis_valid_bunkr_url(url):
 def extract_video_urls(page_url):
     #video_url_pattern = r"https?:\/\/.*?\/v\/[\w\d]+"
     #video_url_pattern = r"https?:\/\/.*?\/v\/[\w\d\-]+"
-    video_url_pattern = r"https?:\/\/.*?\/v\/[^\"]+"
+    #video_url_pattern = r"https?:\/\/.*?\/v\/[^\"]+"
+    video_url_pattern = patterns["video"]
     try:
         response = requests.get(page_url)
         response.raise_for_status()
