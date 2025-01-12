@@ -36,7 +36,8 @@ def extract_video_urls(page_url):
         response = requests.get(page_url)
         response.raise_for_status()
         html_content = response.text
-        video_urls = transform_links(list(set(re.findall(video_url_pattern, html_content))),baseu)  # Remove duplicates
+        mts = list(set(re.findall(video_url_pattern, html_content)))  # Remove duplicates
+        video_urls = transform_links(mts, baseu)
         return video_urls
     except requests.RequestException as e:
         return None  # Return None in case of error
