@@ -4,7 +4,7 @@ import globals
 from config import authU
 
 # Command to change the regex
-@app.on_message(filters.command("change_regex") & filters.private)
+@Client.on_message(filters.command("change_regex") & filters.private)
 async def change_regex(client, message):
     # Check if the user provided a new regex
     global globals
@@ -25,7 +25,7 @@ async def change_regex(client, message):
     await message.reply(f"Regex for 'bunkr_video' has been updated to: `{new_regex}`", parse_mode="markdown")
 
 # Command to view the current regex
-@app.on_message(filters.command("view_regex") & filters.private)
+@Client.on_message(filters.command("view_regex") & filters.private)
 async def view_regex(client, message):
     current_regex = globals.patterns.get("bunkr_video", "Not set")
     await message.reply(f"Current regex for 'bunkr_video': `{current_regex}`", parse_mode="markdown")
