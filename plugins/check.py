@@ -7,7 +7,7 @@ from config import authU
 @app.on_message(filters.command("change_regex") & filters.private)
 async def change_regex(client, message):
     # Check if the user provided a new regex
-    global globals.patterns
+    global globals
     if str(message.chat.id) not in authU:
        await message.reply("**Not authed!...**")
        return
