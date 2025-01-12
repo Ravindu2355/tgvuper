@@ -22,13 +22,13 @@ async def change_regex(client, message):
     globals.patterns["bunkr_video"] = new_regex
     
     # Confirm the change to the user
-    await message.reply(f"Regex for 'bunkr_video' has been updated to: `{new_regex}`", parse_mode="markdown")
+    await message.reply(f"Regex for 'bunkr_video' has been updated to: `{new_regex}`")
 
 # Command to view the current regex
 @Client.on_message(filters.command("view_regex") & filters.private)
 async def view_regex(client, message):
     current_regex = globals.patterns.get("bunkr_video", "Not set")
-    await message.reply(f"Current regex for 'bunkr_video': `{current_regex}`", parse_mode="markdown")
+    await message.reply(f"Current regex for 'bunkr_video': `{current_regex}`")
 
 
 # Handler for the /check command
