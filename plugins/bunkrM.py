@@ -14,7 +14,7 @@ def extract_video_urls(page_url):
     #video_url_pattern = r"https?:\/\/.*?\/v\/[\w\d]+"
     #video_url_pattern = r"https?:\/\/.*?\/v\/[\w\d\-]+"
     #video_url_pattern = r"https?:\/\/.*?\/v\/[^\"]+"
-    video_url_pattern = patterns["video"]
+    video_url_pattern = patterns["bunkr_video"]
     try:
         response = requests.get(page_url)
         response.raise_for_status()
