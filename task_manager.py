@@ -1,5 +1,5 @@
 from threading import Thread
-import os, asyncio
+import os, asyncio, re
 import time
 import requests
 from config import sleep_time
@@ -13,6 +13,15 @@ import globals
 #task_list = []
 running=0
 s=0
+
+def isImageUrl(file_name):
+    pattern = r'\.(jpg|jpeg|png|gif|bmp|tiff|webp|svg)$'
+    return bool(re.search(pattern, file_name, re.IGNORECASE))
+
+# Example
+#print(has_image_extension("example.JPG"))  # True
+#print(has_image_extension("example.doc"))  # False
+
 
 def get_task_list():
     #global task_list
@@ -45,6 +54,7 @@ async def process_tasks(client):
                 thumbnail_url = task.get('thumbnail_url')
                 
                 if task.get('type') and 'page' in task['type']:
+                  if not isImageUrl(url):
                     try:
                         msg = await client.send_message(chat_id, "Starting page extract!")
                         exd = await ex_page(task)  # Extract page sources
@@ -73,7 +83,9 @@ async def process_tasks(client):
                         print(f"Error during page extraction: {e}")
                         await client.send_message(chat_id, f"Error during page extraction: {e}")
                         running = 0  # Ensure the running flag is reset
-
+                  else:
+                      await client.send_message(chat_id,f"**Sorry!...**\nThat was an Image Url...(sorry about that)!")
+                      running = 0
                 else:
                     try:
                         msg = await client.send_message(chat_id, "Starting task!")
