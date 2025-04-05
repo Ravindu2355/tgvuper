@@ -2,7 +2,7 @@ import requests, re
 from bs4 import BeautifulSoup
 from res.ex_help import site_data
 from res.cookie import parse_cookie_str
-from log import logger.info as lg
+from log import logger as lg
 from urllib.parse import urlparse
 
 s_h = {
@@ -44,10 +44,10 @@ def exn_b(html):
         nset.pop()
         nset.append(file_extension)
         nuu = ".".join(nset)
-        lg(nuu)
+        lg.info(nuu)
         return [nuu]
     else:
-        lg("OG tags not found in the HTML")
+        lg.info("OG tags not found in the HTML")
         return []
 
 def eexn_b(html):
@@ -75,7 +75,7 @@ def eexn_b(html):
         nset.pop()
         nset.append(file_extension)
         nuu = ".".join(nset)
-        lg(nuu)
+        lg.info(nuu)
         return [nuu]
 
 
@@ -112,7 +112,7 @@ def ex_vpg(url):
         return video_sources
 
     except requests.exceptions.RequestException as e:
-        lg(f"Error fetching the webpage: {e}")
+        lg.info(f"Error fetching the webpage: {e}")
         return set()
 
 async def ex_page(task):
@@ -126,12 +126,12 @@ async def ex_page(task):
               s_h=v['headers']
     video_srcs = ex_vpg(task['url'])
     if video_srcs:
-       lg("Video sources found:")
+       lg.info("Video sources found:")
        urls=[]
        for src in video_srcs:
-          lg(src)
+          lg.info(src)
           urls.append(src)
        return urls
     else:
-       lg("No video sources found.")
+       lg.info("No video sources found.")
        return []
