@@ -34,7 +34,7 @@ def exn_b(html):
         nset.pop()
         nset.append(file_extension)
         nuu = ".".join(nset)
-        return nuu
+        return [nuu]
         
 
 def ex_vpg(url):
