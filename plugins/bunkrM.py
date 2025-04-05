@@ -37,7 +37,10 @@ def extract_video_urls(page_url):
         response.raise_for_status()
         html_content = response.text
         #mts = list(set(re.findall(video_url_pattern, html_content)))  # Remove duplicates
-        mts = list(set(match[0] for match in re.findall(video_url_pattern, html_content)))  # Extract only full matches
+        #mts = list(set(match[0] for match in re.findall(video_url_pattern, html_content)))  # Extract only full matches
+        matches = re.findall(video_url_pattern)
+        mts=[match[0] + match[2] for match in matches if match[2]]
+        print(mts)
         video_urls = transform_links(mts, baseu)
         return video_urls
     except requests.RequestException as e:
