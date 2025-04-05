@@ -2,7 +2,7 @@ import requests, re
 from bs4 import BeautifulSoup
 from res.ex_help import site_data
 from res.cookie import parse_cookie_str
-from log import logger as lg
+from log import logger.info as lg
 from urllib.parse import urlparse
 
 s_h = {
