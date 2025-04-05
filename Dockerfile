@@ -7,7 +7,7 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . .
 
-# Install system dependencies for Playwright and browsers
+# Install system dependencies required for Playwright
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg2 \
@@ -27,32 +27,25 @@ RUN apt-get update && apt-get install -y \
     libpango-1.0-0 \
     libcups2 \
     libx11-xcb1 \
-    libappindicator3-1 \
-    libindicator3-0.7 \
     libgbm1 \
     libnspr4 \
-    libnss3 \
     libxss1 \
     fonts-liberation \
-    libappindicator1 \
     libxtst6 \
     xdg-utils \
     --no-install-recommends \
     && apt-get clean
 
-# Install ffmpeg
+# Install ffmpeg (only if needed for video handling)
 RUN apt-get install -y ffmpeg && apt-get clean
 
-# Install Playwright dependencies and Playwright itself
+# Install Playwright and its dependencies
 RUN pip3 install playwright
 RUN playwright install
 
-# Install Python dependencies
+# Install Python dependencies from the requirements file
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
-
-# Expose the port the app runs on (not strictly necessary for a Telegram bot)
-#EXPOSE 8000
 
 # Run the bot when the container launches
 CMD python3 bot.py
