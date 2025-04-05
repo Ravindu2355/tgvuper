@@ -2,7 +2,7 @@ import logging
 logging.getLogger("pyrogram").setLevel(logging.WARNING)
 
 # Set up a custom logger for your application
-logger = logging.getLogger("RvX")
+logger = logging.getLogger("RvX-up2")
 logger.setLevel(logging.INFO)
 
 # Create a file handler to log messages to a file
