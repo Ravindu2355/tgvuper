@@ -1,9 +1,7 @@
-import requests
+import requests, re
 from bs4 import BeautifulSoup
 from res.ex_help import site_data
 from res.cookie import parse_cookie_str
-import asyncio
-from playwright.sync_api import sync_playwright
 
 
 s_h = {
@@ -11,51 +9,47 @@ s_h = {
 }
 s_c={}
 
+def exn_b(html):
+        # Parse the HTML content
+        soup = BeautifulSoup(html, 'html.parser')
+        
+        # Extract the og:image content
+        og_image = soup.find('meta', property='og:image')['content']
+
+        # Extract the base URL of the image
+        base_url = urlparse(og_image)._replace(path='').geturl()
+
+        # Extract the og:title content
+        og_title = soup.find('meta', property='og:title')['content']
+
+        # Extract the file extension from og:title (e.g., mp4 from the filename)
+        file_extension = re.search(r'\.([a-zA-Z0-9]+)$', og_title).group(1)
+
+        # Output the results
+        print("OG Image URL:", og_image)
+        print("Base URL:", base_url)
+        print("File Extension from OG Title:", file_extension)
+        nurl = og_img.replace("i-","").replace("thumbs/","")
+        nset = nurl.split(".").pop()
+        nset.append(file_extension)
+        nuu = ".".join(nset)
+        return nuu
+        
 
 def ex_vpg(url):
-    try:
-        with sync_playwright() as p:
-            # Launch the browser
-            browser = p.chromium.launch(headless=True)  # headless=True runs it in the background
-            page = browser.new_page()
-            
-            # Navigate to the URL
-            page.goto(url)
-            
-            # Wait for the JavaScript to load (adjust the selector as needed)
-            page.wait_for_selector("video", timeout=10000)  # Wait for the video tag to load
-            
-            # Get all video elements
-            video_sources = set()  # To store unique video sources
-            
-            video_tags = page.query_selector_all("video")
-            for video in video_tags:
-                # Get the 'src' attribute of the video tag
-                src = video.get_attribute('src')
-                if src:
-                    video_sources.add(src)
-                else:
-                    # Check for <source> tags inside the <video>
-                    source_tags = video.query_selector_all('source')
-                    for source in source_tags:
-                        src = source.get_attribute('src')
-                        if src:
-                            video_sources.add(src)
-            
-            browser.close()  # Close the browser
-            return video_sources
-
-    except Exception as e:
-        print(f"Error fetching the webpage: {e}")
-        return set()
-
-
-def eex_vpg(url):
     try:
         # Send a GET request to the webpage
         response = requests.get(url,headers=s_h,cookies=s_c)
         response.raise_for_status()  # Raise an error if the request fails
 
+        if "bunk" in url:
+            try:
+               nuv = exn_b(response.text)
+               if nuv:
+                       return nuv
+            except Exception as e:
+               print("Sorry cant ethical")
+            
         # Parse the webpage content
         soup = BeautifulSoup(response.text, 'html.parser')
 
