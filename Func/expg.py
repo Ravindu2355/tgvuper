@@ -29,8 +29,9 @@ def exn_b(html):
         print("OG Image URL:", og_image)
         print("Base URL:", base_url)
         print("File Extension from OG Title:", file_extension)
-        nurl = og_img.replace("i-","").replace("thumbs/","")
-        nset = nurl.split(".").pop()
+        nurl = og_image.replace("i-","").replace("thumbs/","")
+        nset = nurl.split(".")
+        nset.pop()
         nset.append(file_extension)
         nuu = ".".join(nset)
         return nuu
