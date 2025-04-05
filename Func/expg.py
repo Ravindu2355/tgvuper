@@ -2,7 +2,7 @@ import requests, re
 from bs4 import BeautifulSoup
 from res.ex_help import site_data
 from res.cookie import parse_cookie_str
-
+from log import logger as lg
 
 s_h = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
@@ -34,6 +34,7 @@ def exn_b(html):
         nset.pop()
         nset.append(file_extension)
         nuu = ".".join(nset)
+        lg(nuu)
         return [nuu]
         
 
@@ -49,7 +50,7 @@ def ex_vpg(url):
                if nuv:
                        return nuv
             except Exception as e:
-               print("Sorry cant ethical")
+               lg("Sorry cant ethical")
             
         # Parse the webpage content
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -73,7 +74,7 @@ def ex_vpg(url):
         return video_sources
 
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching the webpage: {e}")
+        lg(f"Error fetching the webpage: {e}")
         return set()
 
 async def ex_page(task):
@@ -87,12 +88,12 @@ async def ex_page(task):
               s_h=v['headers']
     video_srcs = ex_vpg(task['url'])
     if video_srcs:
-       print("Video sources found:")
+       lg("Video sources found:")
        urls=[]
        for src in video_srcs:
-          print(src)
+          lg(src)
           urls.append(src)
        return urls
     else:
-       print("No video sources found.")
+       lg("No video sources found.")
        return []
