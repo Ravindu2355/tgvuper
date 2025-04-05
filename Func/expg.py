@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from res.ex_help import site_data
 from res.cookie import parse_cookie_str
 from log import logger as lg
+from urllib.parse import urlparse
 
 s_h = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
@@ -10,6 +11,46 @@ s_h = {
 s_c={}
 
 def exn_b(html):
+    # Parse the HTML content
+    soup = BeautifulSoup(html, 'html.parser')
+
+    # Extract the og:image content, with error handling for missing tag
+    og_image = soup.find('meta', property='og:image')
+    if og_image:
+        og_image = og_image.get('content', '')
+    else:
+        og_image = ''
+
+    # Extract the og:title content
+    og_title = soup.find('meta', property='og:title')
+    if og_title:
+        og_title = og_title.get('content', '')
+    else:
+        og_title = ''
+
+    if og_image and og_title:
+        # Extract the base URL of the image
+        base_url = urlparse(og_image)._replace(path='').geturl()
+
+        # Extract the file extension from og:title (e.g., mp4 from the filename)
+        file_extension = re.search(r'\.([a-zA-Z0-9]+)$', og_title).group(1)
+
+        # Output the results
+        print("OG Image URL:", og_image)
+        print("Base URL:", base_url)
+        print("File Extension from OG Title:", file_extension)
+        nurl = og_image.replace("i-", "").replace("thumbs/", "")
+        nset = nurl.split(".")
+        nset.pop()
+        nset.append(file_extension)
+        nuu = ".".join(nset)
+        lg(nuu)
+        return [nuu]
+    else:
+        lg("OG tags not found in the HTML")
+        return []
+
+def eexn_b(html):
         # Parse the HTML content
         soup = BeautifulSoup(html, 'html.parser')
         
@@ -36,7 +77,7 @@ def exn_b(html):
         nuu = ".".join(nset)
         lg(nuu)
         return [nuu]
-        
+
 
 def ex_vpg(url):
     try:
@@ -45,12 +86,9 @@ def ex_vpg(url):
         response.raise_for_status()  # Raise an error if the request fails
 
         if "bunk" in url:
-            try:
-               nuv = exn_b(response.text)
-               if nuv:
-                       return nuv
-            except Exception as e:
-               lg("Sorry cant ethical")
+           nuv = exn_b(response.text)
+           if nuv:
+              return nuv
             
         # Parse the webpage content
         soup = BeautifulSoup(response.text, 'html.parser')
