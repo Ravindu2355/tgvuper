@@ -8,6 +8,9 @@ from res.cookie import r_cookies
 from PIL import Image
 from config import TgSizeLimit
 from Func.tomp4 import convert_video_to_mp4
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 
 def is_file_within_size_limit_from_url(url, size_limit=2 * 1024 * 1024 * 1024):  # 2GB in bytes
     try:
@@ -73,7 +76,7 @@ async def download_file(client, msg, url, download_path, chat_id):
     try:
         headers = get_h(url)
         cookies = r_cookies()
-        response = requests.get(url, headers=headers, cookies=cookies, stream=True)
+        response = requests.get(url, headers=headers, cookies=cookies, stream=True, verify=False)
         
         if response.status_code != 200:
             await client.send_message(chat_id, f"Failed to fetch URL: {url}\nStatus code: {response.status_code}")
