@@ -84,7 +84,7 @@ def eexn_b(html):
         return [nuu]
 
 
-def ex_vpg(url):
+def ex_vpgolff(url):
     try:
         # Send a GET request to the webpage
         response = requests.get(url,headers=s_h,cookies=s_c)
@@ -119,6 +119,65 @@ def ex_vpg(url):
     except requests.exceptions.RequestException as e:
         lg.info(f"Error fetching the webpage: {e}")
         return set()
+
+
+def ex_vpg(url):
+    def extract_sources(html):
+        soup = BeautifulSoup(html, 'html.parser')
+        video_tags = soup.find_all('video')
+        video_sources = set()
+        for video in video_tags:
+            if video.get('src'):
+                video_sources.add(video['src'])
+            else:
+                for source in video.find_all('source'):
+                    if source.get('src'):
+                        video_sources.add(source['src'])
+        return video_sources
+
+    def fetch_with_proxy(target_url):
+        proxy_url = "https://script.google.com/macros/s/AKfycbz1gq2kaB3JydJICPrOai4Klx7qO-L91KSIrrT6GhPougbL48NRS96FT83K1_x2Ucm6lg/exec"
+        try:
+            r = requests.get(proxy_url, params={"url": target_url}, timeout=15)
+            if r.status_code == 200:
+                return r.text
+        except Exception:
+            return None
+        return None
+
+    try:
+        r = requests.get(url, headers=s_h, cookies=s_c, timeout=15)
+        if r.status_code == 200:
+            if "bunk" in url:
+                nuv = exn_b(r.text)
+                if nuv:
+                    return nuv
+            sources = extract_sources(r.text)
+            if sources:
+                return sources
+            # if 200 but no <video>, try proxy
+            proxy_html = fetch_with_proxy(url)
+            if proxy_html:
+                sources = extract_sources(proxy_html)
+                if sources:
+                    return sources
+        else:
+            # try proxy if non-200
+            proxy_html = fetch_with_proxy(url)
+            if proxy_html:
+                sources = extract_sources(proxy_html)
+                if sources:
+                    return sources
+        # if all failed
+        r.raise_for_status()
+    except Exception as e:
+        # last attempt with proxy if request itself failed
+        proxy_html = fetch_with_proxy(url)
+        if proxy_html:
+            sources = extract_sources(proxy_html)
+            if sources:
+                return sources
+        raise e
 
 async def ex_page(task):
     global s_h, s_c
