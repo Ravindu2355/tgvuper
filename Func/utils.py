@@ -77,8 +77,9 @@ async def download_file(client, msg, url, download_path=None, chat_id=None):
             return download_path
 
         # --- Normal direct file download ---
-        response = requests.get(url, headers=headers, cookies=cookies, stream=True, verify=False)
-        if response.status_code != 200:
+        response = requests.get(url, headers=headers, cookies=cookies, stream=True, #verify=False
+                               )
+        if response.status_code != 200 or response.status_code != 206:
             await client.send_message(chat_id, f"Failed to fetch URL: {url}\nStatus code: {response.status_code}")
             return None
 
@@ -128,7 +129,7 @@ def is_file_within_size_limit_from_url(url, size_limit=2 * 1024 * 1024 * 1024): 
         # Send a HEAD request to fetch headers only
         response = requests.head(url, allow_redirects=True)
 
-        if response.status_code != 200:
+        if response.status_code != 200 or response.status_code != 206:
             print(f"Error: Unable to access the URL. Status code: {response.status_code}")
             return f"Error: Unable to access the URL. Status code: {response.status_code}"
 
