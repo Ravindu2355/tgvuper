@@ -49,7 +49,7 @@ def extract_erome_urls(page_url):
         html_content = response.text
 
         # Match image/video URLs inside <img src="..."> or <video src="..."> / <source src="...">
-        url_pattern = r'<(?:img|video|source)[^>]+src=["\'](https?://[^"\']+)["\']'
+        url_pattern = r'<(?:video|source)[^>]+src=["\'](https?://[^"\']+)["\']'
         matches = re.findall(url_pattern, html_content)
         urls = transform_links(matches, base_url)
 
