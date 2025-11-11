@@ -10,6 +10,117 @@ from config import TgSizeLimit
 from Func.tomp4 import convert_video_to_mp4
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+import subprocess
+
+
+async def download_file(client, msg, url, download_path=None, chat_id=None):
+    """
+    Download any file (mp4, image, document, or M3U8) with progress.
+    Supports special headers/cookies if defined in get_h/r_cookies.
+    """
+    try:
+        headers = get_h(url) or {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                          "AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/117.0.0.0 Safari/537.36",
+            "Referer": url,
+            "Accept": "*/*",
+            "Range": "bytes=0-"
+        }
+        cookies = r_cookies() or {}
+
+        # Detect if it's M3U8
+        if url.endswith(".m3u8") or "m3u8" in url:
+            # Default output name if not provided
+            if not download_path:
+                download_path = f"video_{int(time.time())}.mp4"
+
+            await msg.edit_text(f"Detected M3U8 stream. Downloading and converting to MP4...\nOutput: {download_path}")
+
+            # Prepare ffmpeg command
+            ffmpeg_cmd = [
+                "ffmpeg",
+                "-y",
+                "-headers", "\r\n".join(f"{k}: {v}" for k, v in headers.items()),
+                "-i", url,
+                "-c", "copy",
+                download_path
+            ]
+
+            process = subprocess.Popen(
+                ffmpeg_cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                universal_newlines=True,
+            )
+
+            old_pm = ""
+            start_t = time.time()
+            # Read ffmpeg output line by line
+            for line in process.stdout:
+                line = line.strip()
+                if "time=" in line:
+                    # Optional: parse progress from ffmpeg output
+                    now = time.time()
+                    diff = now - start_t
+                    if round(diff % 10) == 0:
+                        pm = f"M3U8 downloading: {line.split('time=')[-1].split(' ')[0]}"
+                        if old_pm != pm:
+                            old_pm = pm
+                            await msg.edit_text(pm)
+
+            process.wait()
+            if process.returncode != 0:
+                await client.send_message(chat_id, f"Failed to download M3U8 URL: {url}")
+                return None
+
+            return download_path
+
+        # --- Normal direct file download ---
+        response = requests.get(url, headers=headers, cookies=cookies, stream=True, verify=False)
+        if response.status_code != 200:
+            await client.send_message(chat_id, f"Failed to fetch URL: {url}\nStatus code: {response.status_code}")
+            return None
+
+        ndl = download_path or url.split("/")[-1].split("?")[0] or f"file_{int(time.time())}.mp4"
+        download_path = ndl
+
+        total_size = int(response.headers.get("content-length", 0))
+        if total_size == 0:
+            await msg.edit_text("Failed to detect size (0 bytes). Trying to download anyway...")
+
+        downloaded = 0
+        start_t = time.time()
+        old_pm = ""
+        await msg.edit_text(f"Starting download\nSize: {humanbytes(total_size)}\nName: {download_path}")
+
+        with open(download_path, "wb") as file:
+            for chunk in response.iter_content(chunk_size=1024*1024):
+                if chunk:
+                    file.write(chunk)
+                    downloaded += len(chunk)
+
+                    # Show progress for files >50MB every 10s
+                    if total_size > 50 * 1024 * 1024:
+                        progress = (downloaded / total_size) * 100 if total_size > 0 else 0
+                        now = time.time()
+                        if round(now - start_t) % 10 == 0 or downloaded == total_size:
+                            pm = f"Downloading... {progress:.2f}%"
+                            if old_pm != pm:
+                                old_pm = pm
+                                await msg.edit_text(pm)
+
+        # Convert if not mp4
+        if download_path.endswith(".mp4"):
+            return download_path
+        else:
+            await msg.edit_text("⚠️ Not an MP4. Attempting to convert...")
+            new_path = await convert_video_to_mp4(msg, download_path)
+            return new_path
+
+    except Exception as e:
+        await client.send_message(chat_id, f"Error downloading URL: {url}\n{e}")
+        return None
 
 
 def is_file_within_size_limit_from_url(url, size_limit=2 * 1024 * 1024 * 1024):  # 2GB in bytes
@@ -70,9 +181,83 @@ def get_file_name_from_response(response):
     
     return f"video_{str(int(time.time()))}.mp4"
 
+# --------------------------
+# Universal Download Function for mp4s
+# --------------------------
+async def download_file_mp4n(client, msg, url, download_path=None, chat_id=None):
+    """
+    Downloads any file (video, image, document) from a URL.
+    Supports special headers/cookies if defined in get_h and r_cookies.
+    Shows progress for large files and converts to mp4 if needed.
+    """
+    try:
+        # Get headers and cookies from special objects
+        headers = get_h(url) or {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                          "AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/117.0.0.0 Safari/537.36",
+            "Referer": url,  # fallback referer
+            "Accept": "*/*",
+            "Range": "bytes=0-"
+        }
+        cookies = r_cookies() or {}
+        
+        # Start request
+        response = requests.get(url, headers=headers, cookies=cookies, stream=True, verify=False)
+        if response.status_code != 200:
+            await client.send_message(chat_id, f"Failed to fetch URL: {url}\nStatus code: {response.status_code}")
+            return None
 
+        # Determine file name
+        ndl = get_file_name_from_response(response)
+        if not ndl:
+            ndl = f"file_{int(time.time())}.mp4"
+        download_path = download_path or ndl
+
+        # Check size
+        total_size = int(response.headers.get("content-length", 0))
+        if total_size == 0:
+            await msg.edit_text("Failed to detect size (0 bytes). Trying to download anyway...")
+        elif total_size >= TgSizeLimit:
+            await client.send_message(chat_id, f"⚠️ Cannot download file larger than {humanbytes(TgSizeLimit)}")
+            return None
+
+        downloaded = 0
+        start_t = time.time()
+        old_pm = ""
+        await msg.edit_text(f"Starting download\nSize: {humanbytes(total_size)}\nName: {download_path}")
+
+        # Download in chunks (1MB)
+        with open(download_path, "wb") as file:
+            for chunk in response.iter_content(chunk_size=1024*1024):
+                if chunk:
+                    file.write(chunk)
+                    downloaded += len(chunk)
+
+                    # Show progress for files >50MB every 10 seconds
+                    if total_size > 50 * 1024 * 1024:
+                        progress = (downloaded / total_size) * 100 if total_size > 0 else 0
+                        now = time.time()
+                        if round(now - start_t) % 10 == 0 or downloaded == total_size:
+                            pm = f"Downloading... {progress:.2f}%"
+                            if old_pm != pm:
+                                old_pm = pm
+                                await msg.edit_text(pm)
+
+        # Convert if not mp4
+        if download_path.endswith(".mp4"):
+            return download_path
+        else:
+            await msg.edit_text("⚠️ Not an MP4. Attempting to convert...")
+            new_path = await convert_video_to_mp4(msg, download_path)
+            return new_path
+
+    except Exception as e:
+        await client.send_message(chat_id, f"Error downloading URL: {url}\n{e}")
+        return None
+                  
 # Function to download file from the URL with progress
-async def download_file(client, msg, url, download_path, chat_id):
+async def download_file_old(client, msg, url, download_path, chat_id):
     try:
         headers = get_h(url)
         cookies = r_cookies()
