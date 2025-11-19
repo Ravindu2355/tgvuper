@@ -7,7 +7,7 @@ async def url_add_handler_yt(client, message):
      parts = message.text.split(" ")
      if str(message.chat.id) in authU:
         if len(parts) < 2:
-            await client.send_message(message.chat.id, "Please provide a URL and optional thumbnail: /url_add <url> <thumbnail_url>")
+            await client.send_message(message.chat.id, "Please provide a URL and optional thumbnail: /yt <url> <thumbnail_url>")
             return
         url = parts[1]
         type="yt_direct"
