@@ -79,7 +79,7 @@ async def download_file(client, msg, url, download_path=None, chat_id=None):
         # --- Normal direct file download ---
         response = requests.get(url, headers=headers, cookies=cookies, stream=True, #verify=False
                                )
-        if response.status_code != 200 or response.status_code != 206:
+        if response.status_code != 200 and response.status_code != 206:
             await client.send_message(chat_id, f"Failed to fetch URL: {url}\nStatus code: {response.status_code}")
             return None
 
