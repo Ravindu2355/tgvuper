@@ -59,7 +59,7 @@ async def process_tasks(client):
                         msg = await client.send_message(chat_id, "Starting page extract!")
                         exd = await ex_page(task)  # Extract page sources
                         await asyncio.sleep(1)
-                        await msg.edit_text(f"Extracted: {len(exd)} sources from that page!")
+                        await msg.edit_text(f"Extracted: {len(exd)} sources from that page!\n1. {exd[0]}")
                         if len(exd) == 0:
                             await msg.reply(f"No sources from this: {task['url']}")
                         for url in exd:
