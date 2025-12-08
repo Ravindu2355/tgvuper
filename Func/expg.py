@@ -234,7 +234,11 @@ def ex_vpg(url):
 async def ex_page(task):
     global s_h, s_c
     if "eporn" in task['url']:
-        return [eproner_ex(task['url'])]
+        vdx=eproner_ex(task['url'])
+        if vdx:
+            return [vdx]
+        else:
+            return []
     for ob in site_data:
         v=site_data[ob]
         if ob in task['type']:
