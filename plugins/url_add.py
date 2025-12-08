@@ -32,8 +32,8 @@ async def url_add_handler(client, message):
      else:
         await client.send_message(message.chat.id,"Sorry You are not user😄")
 
-@Client.on_message(filters.regex("http"))
-async def p_url(client,message):
+#@Client.on_message(filters.regex("http"))
+async def old_p_url(client,message):
         id = str(message.chat.id)
         if id in authU:
             url= message.text
@@ -44,3 +44,50 @@ async def p_url(client,message):
             await message.reply(f"Task added for URL: {url}")
         else:
             await message.reply("Sorry You are not user😄")
+from pyrogram import Client, filters
+from urllib.parse import urlparse
+import os
+
+@Client.on_message(filters.regex(r"https?://"))
+async def p_url(client, message):
+    id = str(message.chat.id)
+
+    if id not in authU:
+        await message.reply("Sorry You are not user😄")
+        return
+
+    url = message.text.strip()
+    type = None
+
+    # ✅ Extract file extension from URL path
+    path = urlparse(url).path
+    ext = os.path.splitext(path)[1].lower()
+
+    # ✅ DIRECT FILE TYPES
+    direct_exts = [
+        ".mp4", ".mkv", ".avi", ".mov", ".webm",
+        ".mp3", ".wav", ".flac",
+        ".zip", ".rar", ".7z",
+        ".pdf", ".apk", ".exe"
+    ]
+
+    if ext in direct_exts:
+        type = "direct_file"
+
+    # ✅ PAGE TYPES
+    elif ext in [".html", ".php", ".asp", ".aspx", ""]:
+        type = "page_url"
+
+    else:
+        type = "unknown"
+
+    # ✅ Add task
+    add_task_to_list(
+        url,
+        message.chat.id,
+        thumbnail_url=None,
+        type=type
+    )
+
+    await message.reply(f"✅ Task added as: `{type}`\n🔗 URL: {url}")
+     
