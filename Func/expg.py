@@ -5,6 +5,7 @@ from res.cookie import parse_cookie_str
 from log import logger as lg
 from urllib.parse import urlparse
 
+
 s_h = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
@@ -14,6 +15,57 @@ s_h = {
     "Upgrade-Insecure-Requests": "1",
 }
 s_c={}
+
+def eproner_ex(page_url):
+
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
+
+    res = requests.get(page_url, headers=s_h, timeout=20)
+    res.raise_for_status()
+
+    soup = BeautifulSoup(res.text, "html.parser")
+
+    download_div = soup.find("div", id="downloaddiv")
+    if not download_div:
+        return None
+
+    # ✅ Auto-detect base URL
+    parsed = urlparse(page_url)
+    base_url = f"{parsed.scheme}://{parsed.netloc}"
+
+    videos = []
+
+    for a in download_div.find_all("a"):
+        text = a.get_text(strip=True)
+        href = a.get("href")
+
+        # Match: (720p, h264, 1272.91 MB)
+        match = re.search(r"\((\d+)p.*?h264.*?,\s*([\d.]+)\s*MB\)", text, re.I)
+        if not match:
+            continue
+
+        quality = int(match.group(1))
+        size_mb = float(match.group(2))
+
+        full_url = href if href.startswith("http") else base_url.rstrip("/") + "/" + href.lstrip("/")
+
+        videos.append({
+            "quality": quality,
+            "size": size_mb,
+            "url": full_url
+        })
+
+    # ✅ Sort by HIGHEST quality first
+    videos.sort(key=lambda x: x["quality"], reverse=True)
+
+    # ✅ Pick best under 1.9GB (1900MB)
+    for video in videos:
+        if video["size"] <= 1900:
+            return video["url"]
+
+    return None
 
 def exn_b(html):
     # Parse the HTML content
@@ -181,6 +233,8 @@ def ex_vpg(url):
 
 async def ex_page(task):
     global s_h, s_c
+    if "eporn" in task['url']:
+        return [eproner_ex(task['url'])]
     for ob in site_data:
         v=site_data[ob]
         if ob in task['type']:
