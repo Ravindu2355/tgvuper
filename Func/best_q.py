@@ -1,70 +1,75 @@
-const MAX_SIZE = 2 * 1024 * 1024 * 1024; // 2GB
-const PREFERRED_QUALITY = 720;
+import aiohttp
+from urllib.parse import urljoin
 
-async function getBestQualityUnder2GB(obj) {
-    let streams = obj.videos[0].streams
-        .map(s => ({ ...s, quality: Number(s.quality) }));
+MAX_SIZE = 2 * 1024 * 1024 * 1024  # 2GB
+PREFERRED_QUALITY = 720
 
-    // 🔹 Sort: 720p first, then highest → lowest
-    streams.sort((a, b) => {
-        if (a.quality === PREFERRED_QUALITY) return -1;
-        if (b.quality === PREFERRED_QUALITY) return 1;
-        return b.quality - a.quality;
-    });
 
-    for (const stream of streams) {
-        try {
-            // ================= MP4 =================
-            if (stream.url.includes(".mp4")) {
-                const head = await fetch(stream.url, { method: "HEAD" });
-                const size = Number(head.headers.get("content-length") || 0);
+async def get_best_quality_under_2gb(obj):
+    streams = [
+        {**s, "quality": int(s.get("quality", 0))}
+        for s in obj["videos"][0]["streams"]
+    ]
 
-                if (size > 0 && size <= MAX_SIZE) {
-                    return {
-                        quality: stream.quality,
-                        url: stream.url,
-                        type: "mp4",
-                        sizeBytes: size,
-                        sizeGB: (size / 1024 / 1024 / 1024).toFixed(2)
-                    };
-                }
-            }
+    # 🔹 Sort: 720p first, then highest → lowest
+    streams.sort(
+        key=lambda s: (
+            s["quality"] != PREFERRED_QUALITY,
+            -s["quality"]
+        )
+    )
 
-            // ================= M3U8 =================
-            if (stream.url.includes(".m3u8")) {
-                const playlist = await fetch(stream.url).then(r => r.text());
+    async with aiohttp.ClientSession() as session:
+        for stream in streams:
+            url = stream["url"]
 
-                const baseUrl = stream.url.split("/").slice(0, -1).join("/");
-                const segments = playlist
-                    .split("\n")
-                    .filter(l => l && !l.startsWith("#"))
-                    .map(seg => seg.startsWith("http") ? seg : `${baseUrl}/${seg}`);
+            try:
+                # ================= MP4 =================
+                if ".mp4" in url and not url.endswith(".m3u8"):
+                    async with session.head(url, allow_redirects=True) as resp:
+                        size = int(resp.headers.get("Content-Length", 0))
 
-                let totalSize = 0;
+                        if 0 < size <= MAX_SIZE:
+                            return {
+                                "quality": stream["quality"],
+                                "url": url,
+                                "type": "mp4",
+                                "sizeBytes": size,
+                                "sizeGB": round(size / 1024 / 1024 / 1024, 2)
+                            }
 
-                for (const seg of segments) {
-                    const head = await fetch(seg, { method: "HEAD" });
-                    const segSize = Number(head.headers.get("content-length") || 0);
-                    totalSize += segSize;
+                # ================= M3U8 =================
+                if ".m3u8" in url:
+                    async with session.get(url) as resp:
+                        playlist = await resp.text()
 
-                    if (totalSize > MAX_SIZE) break;
-                }
+                    base_url = url.rsplit("/", 1)[0] + "/"
+                    segments = [
+                        urljoin(base_url, line.strip())
+                        for line in playlist.splitlines()
+                        if line and not line.startswith("#")
+                    ]
 
-                if (totalSize > 0 && totalSize <= MAX_SIZE) {
-                    return {
-                        quality: stream.quality,
-                        url: stream.url,
-                        type: "m3u8",
-                        sizeBytes: totalSize,
-                        sizeGB: (totalSize / 1024 / 1024 / 1024).toFixed(2)
-                    };
-                }
-            }
+                    total_size = 0
 
-        } catch (e) {
-            continue; // try next option
-        }
-    }
+                    for seg in segments:
+                        async with session.head(seg, allow_redirects=True) as resp:
+                            seg_size = int(resp.headers.get("Content-Length", 0))
+                            total_size += seg_size
 
-    return null;
-}
+                            if total_size > MAX_SIZE:
+                                break
+
+                    if 0 < total_size <= MAX_SIZE:
+                        return {
+                            "quality": stream["quality"],
+                            "url": url,
+                            "type": "m3u8",
+                            "sizeBytes": total_size,
+                            "sizeGB": round(total_size / 1024 / 1024 / 1024, 2)
+                        }
+
+            except Exception:
+                continue  # try next quality
+
+    return None
