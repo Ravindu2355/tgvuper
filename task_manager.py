@@ -64,7 +64,7 @@ async def process_tasks(client):
                         if "xham" in task['url']:
                             extdata = get_video_stream_qualities(task['url'])
                             msg.reply(f"{extdata}")
-                            bq = getExDXham(extdata)
+                            bq = await getExDXham(extdata)
                             exd = [bq['video']['url']]
                         else:
                             exd = await ex_page(task)  # Extract page sources
