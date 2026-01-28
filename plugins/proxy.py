@@ -11,5 +11,5 @@ async def view_regex(client, message):
           await client.send_message(message.chat.id, "Please provide a URL and optional /change_proxy <url>")
           return
       url = parts[1]
-      globals.proxyurl = url
-      await message.reply(f"Setuped : {globals.proxyurl}")
+      globals.proxy["url"] = url
+      await message.reply(f"Setuped : {globals.proxy['url']}")
