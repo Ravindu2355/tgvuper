@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re
 from urllib.parse import urlparse
 import json
+import globals
 
 def get_base_url(url: str) -> str:
     parsed = urlparse(url)
@@ -98,7 +99,14 @@ def get_video_stream_qualities(page_url):
     }
 
     try:
-        html = requests.get(page_url, headers=headers, timeout=10).text
+        payload = {
+         "url": page_url,
+         "headers": {
+            "User-Agent": "Mozilla/5.0"
+          }
+        }
+
+        html = requests.post(globals.proxy["url"], json=payload, timeout=10).text
     except Exception as e:
         return {'error': f'Failed to load page: {e}'}
 
