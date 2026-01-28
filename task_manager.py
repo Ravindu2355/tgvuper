@@ -63,6 +63,7 @@ async def process_tasks(client):
                         bq={}
                         if "xham" in task['url']:
                             extdata = get_video_stream_qualities(task['url'])
+                            msg.reply(f"{extdata}")
                             bq = getExDXham(extdata)
                             exd = [bq['video']['url']]
                         else:
