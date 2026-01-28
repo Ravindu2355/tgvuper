@@ -3,5 +3,9 @@ import re
 task_list = []
 
 patterns={
-  "bunkr_video":r"((https?:\/\/[^\s]*)|)(\/(v|f)\/[^\"]+)"
+  "bunkr_video":r"((https?:\/\/[^\s]*)|)(\/(v|f)\/[^\"]+)",
+}
+
+proxy={
+  "url":""
 }
