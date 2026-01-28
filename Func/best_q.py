@@ -87,11 +87,11 @@ def get_video_thumbnail(obj):
     except (KeyError, IndexError, TypeError):
         return None
 
-def getExDXham(obj):
+async def getExDXham(obj):
     return {
         title:get_video_title(obj),
         thumb:get_video_thumbnail(obj),
-        video:get_best_quality_under_2gb(obj)
+        video: await get_best_quality_under_2gb(obj)
     }
         
 
