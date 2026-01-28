@@ -6,6 +6,8 @@ from config import sleep_time
 from Func.utils import download_file, upload_file_to_telegram
 from Func.expg import ex_page
 import globals
+from plugins.xham import get_video_stream_qualities
+from Func.best_q import getExDXham
 # Initialize the Flask application
 
 
@@ -57,16 +59,26 @@ async def process_tasks(client):
                   if not isImageUrl(url):
                     try:
                         msg = await client.send_message(chat_id, "Starting page extract!")
-                        exd = await ex_page(task)  # Extract page sources
+                        exd=[]
+                        bq={}
+                        if "xham" in task['url']:
+                            extdata = get_video_stream_qualities(task['url'])
+                            bq = getExDXham(extdata)
+                            exd = [bq['video']['url']]
+                        else:
+                            exd = await ex_page(task)  # Extract page sources
                         await asyncio.sleep(1)
                         await msg.edit_text(f"Extracted: {len(exd)} sources from that page!\n1. {exd[0]}")
                         if len(exd) == 0:
                             await msg.reply(f"No sources from this: {task['url']}")
                         for url in exd:
-                            filename = url.split("/")[-1]  # Extract the filename from the URL
-                            if '?' in filename:
+                            if bq and bq['title']:
+                              filename = f"bq['title'].mp4"
+                            else:
+                              filename = url.split("/")[-1]  # Extract the filename from the URL
+                              if '?' in filename:
                                 filename = filename.split("?")[0]
-                            if "." not in filename:
+                              if "." not in filename:
                                 filename = f"{time.time()}.mp4"
                             
                             file_path = await download_file(client, msg, url, filename, chat_id)
