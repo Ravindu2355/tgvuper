@@ -76,10 +76,10 @@ async def process_tasks(client):
                             #if bq and bq['title']:
                               #filename = f"bq['title'].mp4"
                             #else:
-                              filename = url.split("/")[-1]  # Extract the filename from the URL
-                              if '?' in filename:
+                            filename = url.split("/")[-1]  # Extract the filename from the URL
+                            if '?' in filename:
                                 filename = filename.split("?")[0]
-                              if "." not in filename:
+                            if "." not in filename:
                                 filename = f"{time.time()}.mp4"
                             
                             file_path = await download_file(client, msg, url, filename, chat_id)
