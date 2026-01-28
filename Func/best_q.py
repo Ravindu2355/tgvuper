@@ -73,3 +73,25 @@ async def get_best_quality_under_2gb(obj):
                 continue  # try next quality
 
     return None
+
+def get_video_title(obj):
+    try:
+        return obj["videos"][0]["title"]
+    except (KeyError, IndexError, TypeError):
+        return "UnknownTitle_yy"
+
+
+def get_video_thumbnail(obj):
+    try:
+        return obj["videos"][0]["thumbnail"]
+    except (KeyError, IndexError, TypeError):
+        return None
+
+def getExDXham(obj):
+    return {
+        title:get_video_title(obj),
+        thumb:get_video_thumbnail(obj),
+        video:get_best_quality_under_2gb(obj)
+    }
+        
+
