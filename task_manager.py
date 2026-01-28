@@ -63,7 +63,7 @@ async def process_tasks(client):
                         bq={}
                         if "xham" in task['url']:
                             extdata = get_video_stream_qualities(task['url'])
-                            msg.reply(f"{extdata}")
+                            await msg.reply(f"{extdata}")
                             bq = await getExDXham(extdata)
                             exd = [bq['video']['url']]
                         else:
@@ -73,9 +73,9 @@ async def process_tasks(client):
                         if len(exd) == 0:
                             await msg.reply(f"No sources from this: {task['url']}")
                         for url in exd:
-                            if bq and bq['title']:
-                              filename = f"bq['title'].mp4"
-                            else:
+                            #if bq and bq['title']:
+                              #filename = f"bq['title'].mp4"
+                            #else:
                               filename = url.split("/")[-1]  # Extract the filename from the URL
                               if '?' in filename:
                                 filename = filename.split("?")[0]
