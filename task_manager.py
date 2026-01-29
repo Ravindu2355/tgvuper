@@ -7,7 +7,7 @@ from Func.utils import download_file, upload_file_to_telegram
 from Func.expg import ex_page
 import globals
 from plugins.xham import get_video_stream_qualities
-from Func.best_q import getExDXham
+from Func.best_q import getExDXham, extXham
 # Initialize the Flask application
 
 
@@ -62,10 +62,7 @@ async def process_tasks(client):
                         exd=[]
                         bq={}
                         if "xham" in task['url']:
-                            extdata = get_video_stream_qualities(task['url'])
-                            await msg.reply(f"{extdata}")
-                            bq = await getExDXham(extdata)
-                            exd = [bq['video']['url']]
+                            exd = extXham(task['url'])
                         else:
                             exd = await ex_page(task)  # Extract page sources
                         await asyncio.sleep(1)
@@ -73,9 +70,6 @@ async def process_tasks(client):
                         if len(exd) == 0:
                             await msg.reply(f"No sources from this: {task['url']}")
                         for url in exd:
-                            #if bq and bq['title']:
-                              #filename = f"bq['title'].mp4"
-                            #else:
                             filename = url.split("/")[-1]  # Extract the filename from the URL
                             if '?' in filename:
                                 filename = filename.split("?")[0]
