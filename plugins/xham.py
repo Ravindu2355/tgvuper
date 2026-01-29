@@ -5,6 +5,30 @@ from urllib.parse import urlparse
 import json
 import globals
 
+def extXham(video_page_url):
+    try:
+        payload = {"url": video_page_url}
+        headers = {
+            "Content-Type": "application/json",
+            "User-Agent": "Python-Requests"
+        }
+        api_url = "https://script.google.com/macros/s/AKfycbydNOrQnca6hgRcf0EKHOmokLxdcsP0KlQdMpNAeiTqugQzSXKJKwxUg4vHV1Pjjgb_/exec"
+
+        response = requests.post(api_url, json=payload, timeout=20)
+        response.raise_for_status()  # Raises HTTPError if status != 200
+
+        data = response.json()
+        if data and data['ok'] == True:
+           return [data['d']['video']]
+        else:
+           return []
+    except requests.exceptions.RequestException as e:
+        print("Request error:", e)
+        return []
+    except ValueError:
+        print("Failed to parse JSON response")
+        return []
+
 
 def get_base_url(url: str) -> str:
     parsed = urlparse(url)
