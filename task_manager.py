@@ -6,8 +6,8 @@ from config import sleep_time
 from Func.utils import download_file, upload_file_to_telegram
 from Func.expg import ex_page
 import globals
-from plugins.xham import get_video_stream_qualities
-from Func.best_q import getExDXham, extXham
+from plugins.xham import get_video_stream_qualities, extXham
+from Func.best_q import getExDXham
 # Initialize the Flask application
 
 
