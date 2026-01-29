@@ -92,21 +92,24 @@ def extract_preload_m3u8(soup, headers):
 def get_video_stream_qualities(page_url):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
-        'Referer': page_url,
+        #'Referer': page_url,
         'Origin': 'https://xhamster2.com',
         'Accept': '*/*',
         'Accept-Language': 'en-US,en;q=0.9',
     }
 
     try:
-        payload = {
-         "url": page_url,
-         "headers": {
-            "User-Agent": "Mozilla/5.0"
-          }
-        }
+        if globals.proxy["url"] and "off" not in globals.proxy["url"]:
+           payload = {
+             "url": page_url,
+             "headers": {
+             "User-Agent": "Mozilla/5.0"
+             }
+           }
 
-        html = requests.post(globals.proxy["url"], json=payload, timeout=10).text
+           html = requests.post(globals.proxy["url"], json=payload, timeout=10).text
+        else:
+           html = requests.get(page_url, headers=headers, timeout=10).text
     except Exception as e:
         return {'error': f'Failed to load page: {e}'}
 
