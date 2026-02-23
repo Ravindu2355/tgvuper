@@ -8,7 +8,12 @@ sites={
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
     "Referer": "https://bunkr.cr/"
   },
-  
+  "erom":{
+        "Referer": "https://www.erome.com/a/",
+        "User-Agent": "Mozilla/5.0 (Android 11; Mobile; rv:120.0) Gecko/120.0 Firefox/120.0",
+        "Accept": "*/*",
+        "Connection": "keep-alive"
+     } 
 }
 
 def get_h(url):
