@@ -13,7 +13,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import subprocess
 
 
-async def download_file(client, msg, url, download_path=None, chat_id=None):
+async def download_file(client, msg, url, download_path=None, chat_id=None, NewRef=None):
     """
     Download any file (mp4, image, document, or M3U8) with progress.
     Supports special headers/cookies if defined in get_h/r_cookies.
@@ -23,7 +23,7 @@ async def download_file(client, msg, url, download_path=None, chat_id=None):
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                           "AppleWebKit/537.36 (KHTML, like Gecko) "
                           "Chrome/117.0.0.0 Safari/537.36",
-            "Referer": url,
+            "Referer": NewRef or url,
             "Accept": "*/*",
             "Range": "bytes=0-"
         }
