@@ -7,6 +7,7 @@ from Func.utils import download_file, upload_file_to_telegram
 from Func.expg import ex_page
 import globals
 from plugins.xham import get_video_stream_qualities, extXham
+
 from Func.best_q import getExDXham
 # Initialize the Flask application
 
@@ -76,7 +77,7 @@ async def process_tasks(client):
                             if "." not in filename:
                                 filename = f"{time.time()}.mp4"
                             
-                            file_path = await download_file(client, msg, url, filename, chat_id)
+                            file_path = await download_file(client, msg, url, filename, chat_id, NewRef=task['url'])
                             if file_path:
                                 await upload_file_to_telegram(client, msg, task, file_path)
                                 if os.path.exists(file_path):
