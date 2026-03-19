@@ -28,7 +28,9 @@ async def download_file(client, msg, url, download_path=None, chat_id=None, NewR
             "Range": "bytes=0-"
         }
         cookies = r_cookies() or {}
-
+        if ".m3u8" in url:
+            headers.pop("Range", None)
+            
         # Detect if it's M3U8
         if url.endswith(".m3u8") or "m3u8" in url:
             # Default output name if not provided
