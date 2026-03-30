@@ -65,7 +65,7 @@ async def p_url(client, message):
 
     # ✅ DIRECT FILE TYPES
     direct_exts = [
-        ".mp4", ".mkv", ".avi", ".mov", ".webm",
+        ".mp4", ".mkv", ".avi", ".mov", ".webm",".m3u8",
         ".mp3", ".wav", ".flac",
         ".zip", ".rar", ".7z",
         ".pdf", ".apk", ".exe"
