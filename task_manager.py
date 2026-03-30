@@ -7,7 +7,7 @@ from Func.utils import download_file, upload_file_to_telegram
 from Func.expg import ex_page
 import globals
 from plugins.xham import get_video_stream_qualities, extXham
-
+from plugins.col3 import extract as col3
 from Func.best_q import getExDXham
 # Initialize the Flask application
 
@@ -64,6 +64,8 @@ async def process_tasks(client):
                         bq={}
                         if "xham" in task['url']:
                             exd = extXham(task['url'])
+                        elif "col3neg" in task['url'] or "dailym" in task['url']:
+                            exd = col3(task['url'])
                         else:
                             exd = await ex_page(task)  # Extract page sources
                         await asyncio.sleep(1)
