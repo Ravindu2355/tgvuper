@@ -85,12 +85,12 @@ def extract(url):
     
     json = {
         "name":metadata.get("title"),
-        "thumbnail":metadata["thumbnails"]["1080"],
+        "thumbnail":metadata("thumbnails",{}).get("1080"),
         "description":"No Data!",
         "links":{
             "m3u8":{}
         },
-        "duration":metadata["duration"]
+        "duration":metadata.get("duration")
     }
     
     m3u8_url = get_m3u8_url(metadata)
