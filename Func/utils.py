@@ -12,6 +12,73 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import subprocess
 
+async def download_m3u8(url, msg, filename):
+    file_path = filename #os.path.join(dldir, filename)
+    print(f"Downloading M3U8 stream: {url} -> {file_path}")
+    await msg.edit_text(f"Downloading M3U8 stream: {url} -> {file_path}")
+
+    command = [
+        "ffmpeg", "-i", url, "-c", "copy", "-bsf:a", "aac_adtstoasc", file_path, "-progress", "pipe:1"
+    ]
+
+    try:
+        process = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+
+        start_time = time.time()
+        duration = None
+        last_update = time.time()
+
+        while True:
+            output = process.stderr.readline()
+            if not output:
+                break
+            
+            # Extract video duration
+            if duration is None:
+                match = re.search(r"Duration:\s(\d+):(\d+):(\d+.\d+)", output)
+                if match:
+                    h, m, s = map(float, match.groups())
+                    duration = h * 3600 + m * 60 + s  # Convert to seconds
+
+            # Extract current progress time
+            time_match = re.search(r"time=(\d+):(\d+):(\d+.\d+)", output)
+            if time_match:
+                h, m, s = map(float, time_match.groups())
+                current_time = h * 3600 + m * 60 + s  # Convert to seconds
+
+                if duration:
+                    percent = (current_time / duration) * 100
+                    elapsed = time.time() - start_time
+                    eta = (elapsed / percent) * (100 - percent) if percent > 0 else 0
+
+                    # Update every 10 seconds
+                    if time.time() - last_update >= 10:
+                        last_update = time.time()
+                        await msg.edit_text(
+                            f"📥 Downloading...\n"
+                            f"📝 File: `{filename}`\n"
+                            f"⏳ Progress: `{percent:.2f}%`\n"
+                            f"⏱ Elapsed: `{int(elapsed)}s`\n"
+                            f"⌛ ETA: `{int(eta)}s`"
+                        )
+
+        process.wait()
+
+        if process.returncode != 0:
+            await msg.edit_text(f"❌ FFmpeg failed to download M3U8 stream.")
+            return {"error": "ERR on ffmpeg download m3u8."}
+
+        await msg.edit_text(f"✅ M3U8 Download complete: `{filename}`")
+        return {"ok": file_path}
+
+    except Exception as e:
+        await msg.edit_text(f"❌ Error downloading M3U8: {str(e)}")
+        return {"error": f"ERR on download m3u8: {str(e)}"}
 
 async def download_file(client, msg, url, download_path=None, chat_id=None, NewRef=None):
     """
@@ -78,8 +145,12 @@ async def download_file(client, msg, url, download_path=None, chat_id=None, NewR
 
             process.wait()
             if process.returncode != 0:
-                await client.send_message(chat_id, f"Failed to download M3U8 URL: {url}")
-                return None
+                try2 = await download_m3u8(url, msg, download_path)
+                await client.send_message(chat_id, f"Failed to download M3U8 URL system(1): {url} -> {download_path")
+                if "error" in try2:
+                    await client.send_message(chat_id, f"Failed to download M3U8 URL With system(2): {url}")
+                    return None
+                return download_path
 
             return download_path
 
