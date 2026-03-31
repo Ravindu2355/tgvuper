@@ -158,7 +158,7 @@ async def download_file(client, msg, url, download_path=None, chat_id=None, NewR
         # Detect if it's M3U8
         if url.endswith(".m3u8") or "m3u8" in url:
             # Default output name if not provided
-            if not download_path:
+            if not download_path or download_path.lower().endswith(".mp4"):
                 download_path = f"video_{int(time.time())}.mp4"
 
             await msg.edit_text(f"Detected M3U8 stream. Downloading and converting to MP4...\nOutput: {download_path}")
@@ -200,10 +200,10 @@ async def download_file(client, msg, url, download_path=None, chat_id=None, NewR
                             old_pm = pm
                             await msg.edit_text(pm)
 
-            await process.wait()
+            process.wait()
             if process.returncode != 0:
-                try2 = await download_m3u8(url, msg, download_path)
                 await client.send_message(chat_id, f"Failed to download M3U8 URL system(1): {url} -> {download_path}")
+                try2 = await download_m3u8(url, msg, download_path)
                 if "error" in try2:
                     await client.send_message(chat_id, f"Failed to download M3U8 URL With system(2): {url}")
                     return None
