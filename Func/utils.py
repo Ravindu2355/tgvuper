@@ -143,10 +143,10 @@ async def download_file(client, msg, url, download_path=None, chat_id=None, NewR
                             old_pm = pm
                             await msg.edit_text(pm)
 
-            process.wait()
+            await process.wait()
             if process.returncode != 0:
                 try2 = await download_m3u8(url, msg, download_path)
-                await client.send_message(chat_id, f"Failed to download M3U8 URL system(1): {url} -> {download_path")
+                await client.send_message(chat_id, f"Failed to download M3U8 URL system(1): {url} -> {download_path}")
                 if "error" in try2:
                     await client.send_message(chat_id, f"Failed to download M3U8 URL With system(2): {url}")
                     return None
