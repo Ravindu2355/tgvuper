@@ -76,6 +76,8 @@ async def process_tasks(client):
                             filename = url.split("/")[-1]  # Extract the filename from the URL
                             if '?' in filename:
                                 filename = filename.split("?")[0]
+                            if '#' in filename:
+                                filename = filename.split("#")[0]
                             if "." not in filename:
                                 filename = f"{time.time()}.mp4"
                             
