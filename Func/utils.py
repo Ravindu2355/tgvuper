@@ -49,7 +49,7 @@ async def download_file(client, msg, url, download_path=None, chat_id=None, NewR
                 download_path
             ]
 
-            if "col3neg" in NewRef:
+            if "col3neg" in NewRef or "dmcdn" in url:
                 ffmpeg_cmd = [
                  "ffmpeg", "-y", "-i", url, "-c", "copy", "-bsf:a", "aac_adtstoasc", download_path
                 ]
