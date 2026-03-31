@@ -80,7 +80,9 @@ async def process_tasks(client):
                                 filename = filename.split("#")[0]
                             if "." not in filename:
                                 filename = f"{time.time()}.mp4"
-                            
+                            if not filename.lower().endswith(".mp4"):
+                                filename = f"{time.time()}.mp4"
+                                
                             file_path = await download_file(client, msg, url, filename, chat_id, NewRef=task['url'])
                             if file_path:
                                 await upload_file_to_telegram(client, msg, task, file_path)
