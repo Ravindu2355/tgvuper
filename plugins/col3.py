@@ -85,7 +85,7 @@ def extract(url):
     
     json = {
         "name":metadata.get("title"),
-        "thumbnail":metadata("thumbnails",{}).get("1080"),
+        "thumbnail":metadata.get("thumbnails",{}).get("1080"),
         "description":"No Data!",
         "links":{
             "m3u8":{}
@@ -101,13 +101,13 @@ def extract(url):
   
     if not qualities:
         print("❄1�7 No qualities found")
-        return
+        return []
     # convert keys to int and filter <= 720
     valid_qualities = [int(q) for q in qualities.keys() if int(q) <= 720]
 
     if not valid_qualities:
        print("❌ No suitable quality found")
-       return
+       return []
 
     best_q = max(valid_qualities)
     best_url = qualities[str(best_q)]
