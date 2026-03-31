@@ -49,6 +49,11 @@ async def download_file(client, msg, url, download_path=None, chat_id=None, NewR
                 download_path
             ]
 
+            if "col3neg" in NewRef:
+                ffmpeg_cmd = [
+        "ffmpeg", "-y", "-i", url, "-c", "copy", "-bsf:a", "aac_adtstoasc", download_path,
+                ]
+
             process = subprocess.Popen(
                 ffmpeg_cmd,
                 stdout=subprocess.PIPE,
