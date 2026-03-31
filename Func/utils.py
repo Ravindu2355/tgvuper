@@ -12,7 +12,64 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import subprocess
 
+import asyncio
+import re
+import time
+
 async def download_m3u8(url, msg, filename):
+    print(f"Downloading: {url}")
+    await msg.edit_text(f"Downloading...\n{url}")
+
+    command = [
+        "ffmpeg",
+        "-i", url,
+        "-c", "copy",
+        "-bsf:a", "aac_adtstoasc",
+        filename
+    ]
+
+    process = await asyncio.create_subprocess_exec(
+        *command,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE
+    )
+
+    duration = None
+    last_update = time.time()
+
+    while True:
+        line = await process.stderr.readline()
+        if line == b'' and process.returncode is not None:
+            break
+
+        line = line.decode()
+
+        # Get duration
+        if duration is None:
+            match = re.search(r"Duration:\s(\d+):(\d+):(\d+.\d+)", line)
+            if match:
+                h, m, s = map(float, match.groups())
+                duration = h * 3600 + m * 60 + s
+
+        # Progress
+        time_match = re.search(r"time=(\d+):(\d+):(\d+.\d+)", line)
+        if time_match and duration:
+            h, m, s = map(float, time_match.groups())
+            current = h * 3600 + m * 60 + s
+            percent = (current / duration) * 100
+
+            if time.time() - last_update > 5:
+                await msg.edit_text(f"📥 Downloading...\n{percent:.2f}%")
+                last_update = time.time()
+
+    await process.wait()
+
+    if process.returncode != 0:
+        return {"error": "ffmpeg failed"}
+
+    return filename
+
+async def download_m3u8_o(url, msg, filename):
     file_path = filename #os.path.join(dldir, filename)
     print(f"Downloading M3U8 stream: {url} -> {file_path}")
     await msg.edit_text(f"Downloading M3U8 stream: {url} -> {file_path}")
