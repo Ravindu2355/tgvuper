@@ -16,6 +16,7 @@ from Func.best_q import getExDXham
 #task_list = []
 running=0
 s=0
+current_task_url=""
 
 def isImageUrl(file_name):
     pattern = r'\.(jpg|jpeg|png|gif|bmp|tiff|webp|svg)$'
@@ -24,6 +25,24 @@ def isImageUrl(file_name):
 # Example
 #print(has_image_extension("example.JPG"))  # True
 #print(has_image_extension("example.doc"))  # False
+
+def is_url_available(url):
+    global current_task_url, running
+
+    # ❌ if something is currently running → reject
+    if running != 0:
+        return False
+
+    # ❌ if same URL is currently processing → reject
+    if current_task_url == url:
+        return False
+
+    # ❌ if URL already in queue → reject
+    if any(task.get('url') == url for task in globals.task_list):
+        return False
+
+    # ✅ otherwise allow
+    return True
 
 
 def get_task_list():
@@ -45,7 +64,7 @@ def add_task_to_list(url, chat_id, thumbnail_url=None, type=None):
 
 # Function to process tasks from the task list
 async def process_tasks(client):
-    global s, running  # Declare global variables
+    global s, running, current_task_url # Declare global variables
     while True:
         try:
             s += 1
@@ -55,7 +74,7 @@ async def process_tasks(client):
                 url = task.get('url')
                 chat_id = task.get('chat_id')
                 thumbnail_url = task.get('thumbnail_url')
-                
+                current_task_url = url
                 if task.get('type') and 'page' in task['type']:
                   if not isImageUrl(url):
                     try:
@@ -92,14 +111,17 @@ async def process_tasks(client):
                         if len(exd) > 0:
                             await msg.delete()
                         running = 0
+                        current_task_url = None
 
                     except Exception as e:
                         print(f"Error during page extraction: {e}")
                         await client.send_message(chat_id, f"Error during page extraction: {e}")
                         running = 0  # Ensure the running flag is reset
+                        current_task_url = None
                   else:
                       await client.send_message(chat_id,f"**Sorry!...**\nThat was an Image Url...(sorry about that)!")
                       running = 0
+                      current_task_url = None
                 else:
                     try:
                         msg = await client.send_message(chat_id, "Starting task!")
@@ -116,16 +138,19 @@ async def process_tasks(client):
                                 os.remove(file_path)
                             await msg.delete()
                         running = 0
+                        current_task_url = None
 
                     except Exception as e:
                         print(f"Error during file download or upload: {e}")
                         await client.send_message(chat_id, f"Error during task: {e}")
                         running = 0  # Ensure the running flag is reset
+                        current_task_url = None
 
         except Exception as e:
             print(f"Unexpected error in main loop: {e}")
             await asyncio.sleep(1)  # Briefly wait before retrying to avoid a tight error loop
             running = 0
+            current_task_url = None
             
         await asyncio.sleep(sleep_time)  # Wait 2 seconds before checking again
 
