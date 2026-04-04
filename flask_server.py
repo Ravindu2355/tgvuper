@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from task_manager import add_task_to_list, get_task_list
+from task_manager import add_task_to_list, get_task_list, is_url_available
 from flask_cors import CORS
 from threading import Thread
 import os, asyncio
@@ -25,6 +25,8 @@ def add_task():
     chat_id = data.get('chat_id')
     thumbnail_url = data.get('thumbnail_url')
     type = data.get('type')
+    if is_url_available(url):
+        return jsonify({"status": "success", "message": f"Alredy In queve URL: {url} type: {type} chat: {chat_id}"}), 300
     if not type:
         type=None
     if not thumbnail_url:
@@ -45,6 +47,15 @@ def _mt_a():
         return jsonify({"status": "success", "message": f"Tasks added for {len(tasks)} URLS"}), 200
     else:
         return jsonify({"status": "error", "message": "Missing tasks"}), 400
+
+@app.route('/megaV',methods=['POST'])
+def _megaC():
+    data = request.json
+    url = data.get('url')
+    if is_url_available(url):
+        return jsonify({"status": 1, "message": f"Still in queve"}), 200
+    else:
+        return jsonify({"status": 0, "message": "uploaded"}), 200
 
 
 def start_fls():
