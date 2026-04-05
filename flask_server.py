@@ -25,8 +25,8 @@ def add_task():
     chat_id = data.get('chat_id')
     thumbnail_url = data.get('thumbnail_url')
     type = data.get('type')
-    if is_url_available(url):
-        return jsonify({"status": "success", "message": f"Alredy In queve URL: {url} type: {type} chat: {chat_id}"}), 300
+    #if is_url_available(url):
+        #return jsonify({"status": "success", "message": f"Alredy In queve URL: {url} type: {type} chat: {chat_id}"}), 300
     if not type:
         type=None
     if not thumbnail_url:
