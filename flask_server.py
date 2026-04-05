@@ -48,7 +48,7 @@ def _mt_a():
     else:
         return jsonify({"status": "error", "message": "Missing tasks"}), 400
 
-@app.route('/megaV',methods=['POST'])
+@app.route('/megagV',methods=['POST'])
 def _megaC():
     data = request.json
     url = data.get('url')
@@ -57,6 +57,19 @@ def _megaC():
     else:
         return jsonify({"status": 0, "message": "uploaded"}), 200
 
+@app.route('/megaV', methods=['GET'])
+def mega_status():
+    url = request.args.get('url')
+
+    if not url:
+        return jsonify({"status": -1, "message": "Missing URL"}), 400
+
+    # ❌ If still processing or in queue
+    if not is_url_available(url):
+        return jsonify({"status": 1, "message": "Still processing"}), 200
+
+    # ✅ Done (not in queue & not running)
+    return jsonify({"status": 0, "message": "Uploaded"}), 200
 
 def start_fls():
     app.run(host='0.0.0.0', port=8000)
