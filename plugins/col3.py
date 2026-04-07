@@ -8,7 +8,11 @@ def ex_col3(url):
     parsed = urlparse(url)
     params = parse_qs(parsed.query)
     video_id = params.get("id", [None])[0]
-    u = f"https://col3negoriginal.tv/embed.php?id={video_id}&autoplay=1"
+    u="";
+    if "col3" in url:
+        u = f"https://col3negoriginal.tv/embed.php?id={video_id}&autoplay=1"
+    if "lakv" in url:
+        u = f"https://lakvisiontv.net/embed.php?id={video_id}&autoplay=0"
     html = requests.get(u).text
     match = re.search(r'<iframe[^>]+src=[\'"]([^\'"]+)[\'"]', html)
     if match:
