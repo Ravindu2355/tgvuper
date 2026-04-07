@@ -89,7 +89,7 @@ def download(stream_url, quality):
 
 def extract(url):
     
-    if "col3" in url:
+    if "col3" in url or "lakv" in url:
         url = ex_col3(url)
     
     if "?" in url:
