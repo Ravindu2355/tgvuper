@@ -83,7 +83,7 @@ async def process_tasks(client):
                         bq={}
                         if "xham" in task['url']:
                             exd = extXham(task['url'])
-                        elif "col3neg" in task['url'] or "dailym" in task['url']:
+                        elif any(x in task['url'] for x in ["col3neg", "dailym", "lakv"]):
                             exd = col3(task['url'])
                         else:
                             exd = await ex_page(task)  # Extract page sources
