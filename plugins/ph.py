@@ -2,7 +2,7 @@ import re
 import json
 import requests
 from bs4 import BeautifulSoup
-
+import globals
 
 # --------------------------------------------------
 # Extract flashvars streams
