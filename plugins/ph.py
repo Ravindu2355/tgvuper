@@ -3,6 +3,7 @@ import json
 import requests
 from bs4 import BeautifulSoup
 import globals
+from urllib.parse import urlparse
 
 # --------------------------------------------------
 # Extract flashvars streams
