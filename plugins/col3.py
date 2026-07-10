@@ -13,6 +13,8 @@ def ex_col3(url):
         u = f"https://col3negoriginal.tv/embed.php?id={video_id}&autoplay=1"
     if "lakv" in url:
         u = f"https://lakvisiontv.net/embed.php?id={video_id}&autoplay=0"
+    if "varunmultimedia" in url:
+        url = url;
     html = requests.get(u).text
     match = re.search(r'<iframe[^>]+src=[\'"]([^\'"]+)[\'"]', html)
     if match:
@@ -89,7 +91,7 @@ def download(stream_url, quality):
 
 def extract(url):
     
-    if "col3" in url or "lakv" in url:
+    if "col3" in url or "lakv" in url or "varunmultimedia" in url:
         url = ex_col3(url)
     
     if "?" in url:
