@@ -14,7 +14,7 @@ def ex_col3(url):
     if "lakv" in url:
         u = f"https://lakvisiontv.net/embed.php?id={video_id}&autoplay=0"
     if "varunmultimedia" in url:
-        url = url;
+        url = url.replace("play.html#p_sel","mxpll.js")
     html = requests.get(u).text
     match = re.search(r'<iframe[^>]+src=[\'"]([^\'"]+)[\'"]', html)
     if match:
