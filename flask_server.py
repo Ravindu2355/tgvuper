@@ -25,6 +25,7 @@ def add_task():
     chat_id = data.get('chat_id')
     thumbnail_url = data.get('thumbnail_url')
     type = data.get('type')
+    referer = data.get('referer')
     #if is_url_available(url):
         #return jsonify({"status": "success", "message": f"Alredy In queve URL: {url} type: {type} chat: {chat_id}"}), 300
     if not type:
@@ -32,7 +33,7 @@ def add_task():
     if not thumbnail_url:
         thumbnail_url=None
     if url and chat_id:
-        task = {'url': url, 'chat_id': chat_id, 'thumbnail_url': thumbnail_url, 'type': type}
+        task = {'url': url, 'chat_id': chat_id, 'thumbnail_url': thumbnail_url, 'type': type, 'referer':referer}
         globals.task_list.append(task)  # Adding task to the global task list
         return jsonify({"status": "success", "message": f"Task added for URL: {url} type: {type} chat: {chat_id}"}), 200
     else:
