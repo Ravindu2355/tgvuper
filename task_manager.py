@@ -3,7 +3,7 @@ import os, asyncio, re
 import time
 import requests
 from config import sleep_time
-from Func.utils import download_file, upload_file_to_telegram
+from Func.utils import download_file, download_ranged_file, upload_file_to_telegram
 from Func.expg import ex_page
 import globals
 from plugins.xham import get_video_stream_qualities, extXham
@@ -50,13 +50,14 @@ def get_task_list():
     return globals.task_list
 
 # Function to add a task to the task list
-def add_task_to_list(url, chat_id, thumbnail_url=None, type=None):
+def add_task_to_list(url, chat_id, thumbnail_url=None, type=None, referer=None):
     #global task_list
     task = {
         'url': url,
         'chat_id': chat_id,
         'thumbnail_url': thumbnail_url,
-        'type':type
+        'type':type,
+        'referer':referer
     }
     globals.task_list.append(task)
     print("task add")
@@ -130,8 +131,11 @@ async def process_tasks(client):
                             filename = filename.split("?")[0]
                         if "." not in filename:
                             filename = f"{time.time()}.mp4"
-                        
-                        file_path = await download_file(client, msg, url, filename, chat_id)
+                        file_path = ""
+                        if task.get('type') and 'rangedl' in task['type']:
+                            file_path = await download_ranged_file(client, msg, url, download_path=filename, chat_id=chat_id,referer=task.get('referer'))
+                        else:
+                            file_path = await download_file(client, msg, url, filename, chat_id)
                         if file_path:
                             await upload_file_to_telegram(client, msg, task, file_path)
                             if os.path.exists(file_path):
