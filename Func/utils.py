@@ -391,7 +391,155 @@ async def download_file_mp4n(client, msg, url, download_path=None, chat_id=None)
     except Exception as e:
         await client.send_message(chat_id, f"Error downloading URL: {url}\n{e}")
         return None
-                  
+
+async def download_ranged_file(client,msg,url,download_path=None,chat_id=None,referer=None):
+    """
+    Download a file using browser-style Range + Referer headers.
+
+    Intended for servers where the video player works with:
+        Range: bytes=0-
+        Referer: <player page>
+
+    Supports HTTP 200 and 206 responses.
+    """
+    try:
+        headers = {
+            "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/117.0.0.0 Safari/537.36",
+            "Referer": referer or url,
+            "Accept": "*/*",
+            "Range": "bytes=0-"
+        }
+
+        # -------------------------------------------------
+        # REQUEST
+        # -------------------------------------------------
+
+        response = requests.get(url,headers=headers,stream=True,allow_redirects=True)
+        if response.status_code not in (200, 206):
+            await client.send_message(chat_id,
+                f"❌ Ranged download failed\n"
+                f"Status: {response.status_code}\n"
+                f"URL: {url}"
+            )
+            return None
+
+        # -------------------------------------------------
+        # FILE NAME
+        # -------------------------------------------------
+
+        if not download_path:
+            filename = url.split("/")[-1].split("?")[0]
+            if not filename or "." not in filename:
+                filename = f"video_{int(time.time())}.mp4"
+            download_path = filename
+
+        # -------------------------------------------------
+        # SIZE
+        # -------------------------------------------------
+
+        total_size = 0
+
+        # Content-Length
+        if response.headers.get("Content-Length"):
+            try:
+                total_size = int(response.headers["Content-Length"])
+            except:
+                total_size = 0
+
+        # Content-Range can contain total size:
+        #
+        # Content-Range: bytes 0-12345/987654321
+        #
+
+        content_range = response.headers.get("Content-Range","")
+        if "/" in content_range:
+            try:
+                total_part = content_range.split("/")[-1]
+                if total_part != "*":
+                    total_size = int(total_part)
+            except:
+                pass
+
+        await msg.edit_text(
+            "🚀 Starting ranged download\n"
+            f"Name: {download_path}\n"
+            f"Size: {humanbytes(total_size) if total_size else 'Unknown'}\n"
+            f"HTTP: {response.status_code}"
+        )
+
+        # -------------------------------------------------
+        # DOWNLOAD
+        # -------------------------------------------------
+
+        downloaded = 0
+        start_t = time.time()
+        old_pm = ""
+
+        with open(download_path, "wb") as file:
+            for chunk in response.iter_content(chunk_size=1024 * 1024):
+                if not chunk:
+                    continue
+                file.write(chunk)
+                downloaded += len(chunk)
+                # Update every ~5 seconds
+                now = time.time()
+                if now - start_t >= 5:
+                    start_t = now
+                    if total_size:
+                        progress = (downloaded /total_size) * 100
+                        pm = (
+                            f"📥 Downloading...\n"
+                            f"{progress:.2f}%\n"
+                            f"{humanbytes(downloaded)} / "
+                            f"{humanbytes(total_size)}"
+                        )
+
+                    else:
+                        pm = (
+                            f"📥 Downloading...\n"
+                            f"{humanbytes(downloaded)}"
+                        )
+                    if pm != old_pm:
+                        old_pm = pm
+                        try:
+                            await msg.edit_text(pm)
+                        except:
+                            pass
+
+        # -------------------------------------------------
+        # CHECK RESULT
+        # -------------------------------------------------
+
+        if not os.path.exists(download_path):
+            await client.send_message(chat_id,"❌ Download finished but file was not created.")
+            return None
+
+        file_size = os.path.getsize(download_path)
+        if file_size == 0:
+            await client.send_message(chat_id,"❌ Download produced an empty file.")
+            try:
+                os.remove(download_path)
+            except:
+                pass
+            return None
+            
+        await msg.edit_text(
+            "✅ Ranged download completed\n"
+            f"Name: {download_path}\n"
+            f"Size: {humanbytes(file_size)}"
+        )
+        return download_path
+
+    except Exception as e:
+        print(f"Ranged download error: {e}")
+        await client.send_message(chat_id,
+            f"❌ Error during ranged download:\n{e}"
+        )
+        return None
+                     
 # Function to download file from the URL with progress
 async def download_file_old(client, msg, url, download_path, chat_id):
     try:
