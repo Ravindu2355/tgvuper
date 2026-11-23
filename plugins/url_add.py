@@ -2,12 +2,12 @@ from pyrogram import Client, filters, types
 from task_manager import add_task_to_list, start_task_processing
 from config import authU
 
-@Client.on_message(filters.regex("yt"))
+@Client.on_message(filters.regex("yt_url"))
 async def url_add_handler_yt(client, message):
      parts = message.text.split(" ")
      if str(message.chat.id) in authU:
         if len(parts) < 2:
-            await client.send_message(message.chat.id, "Please provide a URL and optional thumbnail: /yt <url> <thumbnail_url>")
+            await client.send_message(message.chat.id, "Please provide a URL and optional thumbnail: /yt_url <url> <thumbnail_url>")
             return
         url = parts[1]
         type="yt_direct"
@@ -31,6 +31,24 @@ async def url_add_handler(client, message):
         await client.send_message(message.chat.id, f"Task added for URL: {url}")
      else:
         await client.send_message(message.chat.id,"Sorry You are not user😄")
+
+@Client.on_message(filters.regex(r"^/range_dl(?:\s|$)"))
+async def url_add_handler(client, message):
+    parts = message.text.split()
+
+    if str(message.chat.id) not in authU:
+        await client.send_message(message.chat.id,"Sorry You are not user 😄")
+        return
+
+    if len(parts) < 2:
+        await client.send_message(message.chat.id,"Please provide a URL:\n""/range_dl <url> <thumbnail_url> <referer>")
+        return
+    url = parts[1]
+    thumbnail_url = parts[2] if len(parts) > 2 else None
+    referer = parts[3] if len(parts) > 3 else None
+    add_task_to_list(url=url,chat_id=message.chat.id,thumbnail_url=thumbnail_url,type="rangedl",referer=referer)
+
+    await client.send_message(message.chat.id,f"✅ Task added\n\n"f"URL: {url}\n"f"Referer: {referer or 'None'}")
 
 #@Client.on_message(filters.regex("http"))
 async def old_p_url(client,message):
