@@ -72,6 +72,29 @@ def mega_status():
     # ✅ Done (not in queue & not running)
     return jsonify({"status": 0, "message": "Uploaded"}), 200
 
+@app.route('/task_count', methods=['GET'])
+def task_count():
+    try:
+        queue_count = len(globals.task_list)
+
+        # Get current running state from task_manager
+        import task_manager
+
+        running = task_manager.running
+
+        return jsonify({
+            "status": "success",
+            "queue_count": queue_count,
+            "running": running,
+            "total_active": queue_count + (1 if running else 0)
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+
 def start_fls():
     app.run(host='0.0.0.0', port=8000)
 
